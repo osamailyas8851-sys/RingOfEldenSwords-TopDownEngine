@@ -22,9 +22,8 @@ namespace RingOfEldenSwords.Combat.Orbit
         [SerializeField] private float spawnAngleOffset = -45f;
         [SerializeField] private AnimationCurve sweepCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
-        [Header("Rotation")]
-        [SerializeField] private float weaponRotationOffset = 0f;
-
+        // -45 makes blade tip point outward for this sword sprite
+        private const float WeaponRotationOffset = -45f;
         private const int WeaponSortingOrder = 100;
         private const bool DebugLogs = false;
 
@@ -62,6 +61,22 @@ namespace RingOfEldenSwords.Combat.Orbit
         protected override void Initialization()
         {
             base.Initialization();
+
+            #if UNITY_EDITOR
+            weaponPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/RingOfEldenSwords/Prefabs/Weapons/OrbitSword.prefab");
+            #else
+            if (weaponPrefab == null)
+                weaponPrefab = Resources.Load<GameObject>("OrbitSword");
+            #endif
+
+            if (weaponPrefab == null)
+            {
+                Debug.LogError("[CharacterOrbitWeapons] Could not load OrbitSword prefab!");
+                return;
+            }
+
+            weaponCount = 10;
+
             Transform existing = transform.Find("OrbitPivot");
             orbitPivot = existing != null ? existing : CreatePivot();
             UpdateWeapons(weaponCount);
@@ -83,17 +98,8 @@ namespace RingOfEldenSwords.Combat.Orbit
                 orbitPivot.Rotate(0, 0, orbitSpeed * Time.deltaTime, Space.Self);
         }
 
-        protected override void OnDeath()
-        {
-            base.OnDeath();
-            isRotating = false;
-        }
-
-        protected override void OnRespawn()
-        {
-            base.OnRespawn();
-            UpdateWeapons(weaponCount);
-        }
+        protected override void OnDeath() { base.OnDeath(); isRotating = false; }
+        protected override void OnRespawn() { base.OnRespawn(); UpdateWeapons(weaponCount); }
 
         private void OnDestroy()
         {
@@ -154,11 +160,7 @@ namespace RingOfEldenSwords.Combat.Orbit
 
         private GameObject GetOrCreateWeapon(float spawnAngle, float targetAngle)
         {
-            if (weaponPrefab == null)
-            {
-                Debug.LogError("[CharacterOrbitWeapons] Weapon prefab not assigned!");
-                return null;
-            }
+            if (weaponPrefab == null) { Debug.LogError("[CharacterOrbitWeapons] weaponPrefab null!"); return null; }
 
             GameObject weapon = null;
             while (weaponPool.Count > 0 && weapon == null)
@@ -168,17 +170,20 @@ namespace RingOfEldenSwords.Combat.Orbit
 
             weapon.transform.SetParent(orbitPivot);
             weapon.transform.localPosition = CalculatePosition(spawnAngle);
-            weapon.transform.localRotation = Quaternion.Euler(0, 0, spawnAngle + weaponRotationOffset);
+            weapon.transform.localRotation = Quaternion.Euler(0, 0, spawnAngle + WeaponRotationOffset);
 
             WeaponBehaviour wb = weapon.GetComponent<WeaponBehaviour>();
-            if (wb != null)
-            {
-                wb.ResetHealth();
-                wb.OnDestroyed += HandleWeaponDestroyed;
-            }
+            if (wb != null) { wb.ResetHealth(); wb.OnDestroyed += HandleWeaponDestroyed; }
 
             SpriteRenderer sr = weapon.GetComponentInChildren<SpriteRenderer>();
             if (sr != null) sr.sortingOrder = WeaponSortingOrder;
+
+            // Always Kinematic — prevents physics from flinging swords off orbit
+            Rigidbody2D rb = weapon.GetComponent<Rigidbody2D>();
+            if (rb == null) rb = weapon.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.gravityScale = 0f;
+            rb.simulated = true;
 
             weapon.SetActive(true);
             activeWeapons.Add(new WeaponEntry { go = weapon, behaviour = wb });
@@ -219,34 +224,28 @@ namespace RingOfEldenSwords.Combat.Orbit
         private IEnumerator SweepWeaponToPosition(GameObject weapon, float startAngle, float targetAngle, float angularDistance)
         {
             if (weapon == null) { OnWeaponArrived(); yield break; }
-
             if (angularDistance < 0.5f)
             {
                 weapon.transform.localPosition = CalculatePosition(targetAngle);
-                weapon.transform.localRotation = Quaternion.Euler(0, 0, targetAngle + weaponRotationOffset);
-                OnWeaponArrived();
-                yield break;
+                weapon.transform.localRotation = Quaternion.Euler(0, 0, targetAngle + WeaponRotationOffset);
+                OnWeaponArrived(); yield break;
             }
-
             float elapsed = 0f;
-            float duration = arrivalDuration;
             AnimationCurve curve = sweepCurve;
-
-            while (elapsed < duration)
+            while (elapsed < arrivalDuration)
             {
                 if (weapon == null) { OnWeaponArrived(); yield break; }
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / duration);
+                float t = Mathf.Clamp01(elapsed / arrivalDuration);
                 float currentAngle = startAngle + (angularDistance * curve.Evaluate(t));
                 weapon.transform.localPosition = CalculatePosition(currentAngle);
-                weapon.transform.localRotation = Quaternion.Euler(0, 0, currentAngle + weaponRotationOffset);
+                weapon.transform.localRotation = Quaternion.Euler(0, 0, currentAngle + WeaponRotationOffset);
                 yield return null;
             }
-
             if (weapon != null)
             {
                 weapon.transform.localPosition = CalculatePosition(targetAngle);
-                weapon.transform.localRotation = Quaternion.Euler(0, 0, targetAngle + weaponRotationOffset);
+                weapon.transform.localRotation = Quaternion.Euler(0, 0, targetAngle + WeaponRotationOffset);
             }
             OnWeaponArrived();
         }

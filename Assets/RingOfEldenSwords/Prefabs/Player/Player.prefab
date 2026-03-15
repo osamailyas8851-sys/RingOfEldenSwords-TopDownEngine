@@ -56,9 +56,9 @@ GameObject:
   - component: {fileID: 114871673569860628}
   - component: {fileID: 114654745524214770}
   - component: {fileID: 114704504716019314}
-  - component: {fileID: 1805176329327406403}
+  - component: {fileID: 3069189779617488474}
   m_Layer: 10
-  m_Name: MinimalCharacter2D
+  m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,7 +79,7 @@ Transform:
   m_Children:
   - {fileID: 4417269262889042}
   - {fileID: 4539632890920534}
-  - {fileID: 7221212079268290182}
+  - {fileID: 8826313340491866570}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114307563035583202
@@ -616,7 +616,7 @@ MonoBehaviour:
   AutoEquipOnlyIfEquipmentInventoryIsEmpty: 0
   AutoEquipOnRespawn: 1
   CharacterHandleWeapon: {fileID: 0}
---- !u!114 &1805176329327406403
+--- !u!114 &3069189779617488474
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -637,8 +637,7 @@ MonoBehaviour:
   BlockingMovementStates: 
   BlockingConditionStates: 
   BlockingWeaponStates: 
-  weaponPrefab: {fileID: 6621402824395965232, guid: 0a756449108094335be8f1336be065a4,
-    type: 3}
+  weaponPrefab: {fileID: 0}
   weaponCount: 3
   orbitRadius: 2
   orbitSpeed: 180
@@ -755,7 +754,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &2827529539544699577
+--- !u!1 &3588359096314293170
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -763,7 +762,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7221212079268290182}
+  - component: {fileID: 8826313340491866570}
   m_Layer: 0
   m_Name: OrbitPivot
   m_TagString: Untagged
@@ -771,13 +770,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7221212079268290182
+--- !u!4 &8826313340491866570
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2827529539544699577}
+  m_GameObject: {fileID: 3588359096314293170}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}

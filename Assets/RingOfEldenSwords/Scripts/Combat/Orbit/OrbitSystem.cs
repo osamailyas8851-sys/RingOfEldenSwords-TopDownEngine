@@ -14,8 +14,6 @@ namespace RingOfEldenSwords.Combat.Orbit
 
         [Header("Configuration")]
         [SerializeField] private CombatConfig config;
-
-        [Header("References")]
         [SerializeField] private GameObject weaponPrefab;
 
         [Header("Faction")]
@@ -27,9 +25,8 @@ namespace RingOfEldenSwords.Combat.Orbit
         [Header("Rotation")]
         [SerializeField] private float orbitSpeed = 180f;
 
-        [Header("Rotation Offset")]
-        [SerializeField] private float weaponRotationOffset = 0f;
-
+        // -45 makes blade tip point outward for this sword sprite
+        private const float WeaponRotationOffset = -45f;
         private const int WeaponSortingOrder = 100;
 
         private struct WeaponEntry
@@ -49,7 +46,6 @@ namespace RingOfEldenSwords.Combat.Orbit
         private float cachedSpawnAngleOffset = -45f;
         private float cachedArrivalDuration = 0.5f;
         private AnimationCurve cachedSweepCurve;
-
         private Queue<GameObject> weaponPool = new Queue<GameObject>();
 
         public event Action<GameObject> OnWeaponSpawned;
@@ -184,10 +180,17 @@ namespace RingOfEldenSwords.Combat.Orbit
 
             targetAngles.Add(targetAngle);
             weapon.transform.localPosition = CalculatePosition(spawnAngle);
-            weapon.transform.localRotation = Quaternion.Euler(0, 0, spawnAngle + weaponRotationOffset);
+            weapon.transform.localRotation = Quaternion.Euler(0, 0, spawnAngle + WeaponRotationOffset);
 
             SpriteRenderer sr = weapon.GetComponentInChildren<SpriteRenderer>();
             if (sr != null) sr.sortingOrder = WeaponSortingOrder;
+
+            // Always Kinematic — prevents physics from flinging swords off orbit
+            Rigidbody2D rb = weapon.GetComponent<Rigidbody2D>();
+            if (rb == null) rb = weapon.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.gravityScale = 0f;
+            rb.simulated = true;
 
             weapon.SetActive(true);
             activeWeapons.Add(new WeaponEntry { go = weapon, behaviour = wb });
@@ -221,34 +224,28 @@ namespace RingOfEldenSwords.Combat.Orbit
         private IEnumerator SweepWeaponToPosition(GameObject weapon, float startAngle, float targetAngle, float angularDistance, int index)
         {
             if (weapon == null) { OnWeaponArrived(); yield break; }
-
             if (angularDistance < 0.5f)
             {
                 weapon.transform.localPosition = CalculatePosition(targetAngle);
-                weapon.transform.localRotation = Quaternion.Euler(0, 0, targetAngle + weaponRotationOffset);
-                OnWeaponArrived();
-                yield break;
+                weapon.transform.localRotation = Quaternion.Euler(0, 0, targetAngle + WeaponRotationOffset);
+                OnWeaponArrived(); yield break;
             }
-
             float elapsed = 0f;
-            float duration = cachedArrivalDuration;
             AnimationCurve curve = cachedSweepCurve;
-
-            while (elapsed < duration)
+            while (elapsed < cachedArrivalDuration)
             {
                 if (weapon == null) { OnWeaponArrived(); yield break; }
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / duration);
+                float t = Mathf.Clamp01(elapsed / cachedArrivalDuration);
                 float currentAngle = startAngle + (angularDistance * curve.Evaluate(t));
                 weapon.transform.localPosition = CalculatePosition(currentAngle);
-                weapon.transform.localRotation = Quaternion.Euler(0, 0, currentAngle + weaponRotationOffset);
+                weapon.transform.localRotation = Quaternion.Euler(0, 0, currentAngle + WeaponRotationOffset);
                 yield return null;
             }
-
             if (weapon != null)
             {
                 weapon.transform.localPosition = CalculatePosition(targetAngle);
-                weapon.transform.localRotation = Quaternion.Euler(0, 0, targetAngle + weaponRotationOffset);
+                weapon.transform.localRotation = Quaternion.Euler(0, 0, targetAngle + WeaponRotationOffset);
             }
             OnWeaponArrived();
         }
