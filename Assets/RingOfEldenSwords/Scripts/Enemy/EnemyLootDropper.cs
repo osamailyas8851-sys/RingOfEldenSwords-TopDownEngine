@@ -1,14 +1,14 @@
 using UnityEngine;
 using MoreMountains.TopDownEngine;
-using RingOfEldenSwords.Combat.Orbit;
+using RingOfEldenSwords.Character.Abilities;
 using RingOfEldenSwords.Combat.Pickups;
 
 namespace RingOfEldenSwords
 {
     /// <summary>
-    /// Replaces TDE's Loot component.
-    /// On enemy death: reads OrbitSystem sword count, spawns WeaponPickup
-    /// with the correct sword count and sword sprite.
+    /// On enemy death: reads CharacterOrbitWeapons sword count, spawns a
+    /// WeaponPickup scattered away from the death position with the correct
+    /// sword count and sprite.
     /// </summary>
     public class EnemyLootDropper : MonoBehaviour
     {
@@ -42,33 +42,33 @@ namespace RingOfEldenSwords
         {
             if (pickupPrefab == null)
             {
-                Debug.LogError("[EnemyLootDropper] pickupPrefab not assigned!");
+                Debug.LogError("[EnemyLootDropper] pickupPrefab not assigned!", this);
                 return;
             }
 
-            // Read sword count from OrbitSystem
-            OrbitSystem orbit = GetComponentInChildren<OrbitSystem>(includeInactive: true);
+            // Read sword count from CharacterOrbitWeapons on the enemy root
+            CharacterOrbitWeapons orbit = GetComponent<CharacterOrbitWeapons>();
             int swordCount = orbit != null ? Mathf.Max(1, orbit.WeaponCount) : 1;
 
-            // Get the sword sprite from the first active sword
+            // Get sprite from first active sword in the orbit ring
             Sprite swordSprite = GetSwordSprite(orbit);
 
-            // Scatter position
+            // Scatter position — spawn away from enemy so pickup is always visible
             Vector2 scatter = Random.insideUnitCircle.normalized * Random.Range(minScatter, maxScatter);
-            Vector3 spawnPos = transform.position + new Vector3(scatter.x, scatter.y, 0);
+            Vector3 spawnPos = transform.position + new Vector3(scatter.x, scatter.y, 0f);
 
-            // Spawn and initialise
+            // Spawn and initialise the pickup
             GameObject go = Instantiate(pickupPrefab, spawnPos, Quaternion.identity);
             WeaponPickup pickup = go.GetComponent<WeaponPickup>();
             if (pickup != null)
                 pickup.Init(swordCount, swordSprite);
         }
 
-        private Sprite GetSwordSprite(OrbitSystem orbit)
+        private Sprite GetSwordSprite(CharacterOrbitWeapons orbit)
         {
             if (orbit == null) return null;
 
-            // Try to get sprite from first active sword in orbit
+            // Try to get sprite from the first active sword
             foreach (GameObject sword in orbit.Weapons)
             {
                 if (sword == null) continue;
@@ -77,7 +77,7 @@ namespace RingOfEldenSwords
                     return sr.sprite;
             }
 
-            // Fall back to OrbitSword prefab sprite via AssetDatabase in editor
+            // Fallback: load sprite directly from the OrbitSword prefab asset
             #if UNITY_EDITOR
             var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/RingOfEldenSwords/Prefabs/Weapons/OrbitSword.prefab");

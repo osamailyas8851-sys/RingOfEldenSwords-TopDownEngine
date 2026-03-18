@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 114113908976523258}
   - component: {fileID: 114778105809703722}
   - component: {fileID: 2927698595917446635}
+  - component: {fileID: 1136098858273815074}
   m_Layer: 13
   m_Name: Enemy
   m_TagString: Enemy
@@ -822,6 +823,58 @@ MonoBehaviour:
     type: 3}
   minScatter: 0.8
   maxScatter: 1.8
+--- !u!114 &1136098858273815074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561694053617324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c67188f119944250bec64b8d4d9273c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AbilityStartSfx: {fileID: 0}
+  AbilityInProgressSfx: {fileID: 0}
+  AbilityStopSfx: {fileID: 0}
+  AbilityStartFeedbacks: {fileID: 0}
+  AbilityStopFeedbacks: {fileID: 0}
+  AbilityPermitted: 1
+  BlockingMovementStates: 
+  BlockingConditionStates: 
+  BlockingWeaponStates: 
+  WeaponPrefab: {fileID: 6621402824395965232, guid: 0a756449108094335be8f1336be065a4,
+    type: 3}
+  WeaponCount: 2
+  OrbitRadius: 2
+  OrbitSpeed: 150
+  ArrivalDuration: 0.5
+  SpawnAngleOffset: -45
+  SweepCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1671905898232590
 GameObject:
   m_ObjectHideFlags: 0
@@ -11615,7 +11668,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2462565328356631386}
-  - component: {fileID: 3172029117588948078}
   m_Layer: 0
   m_Name: OrbitPivot
   m_TagString: Untagged
@@ -11638,21 +11690,3 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4736116768674126}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3172029117588948078
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3512105067850301906}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f965b711a3e474aa58d5bb0190b2cfbd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  config: {fileID: 0}
-  weaponPrefab: {fileID: 6621402824395965232, guid: 0a756449108094335be8f1336be065a4,
-    type: 3}
-  faction: 1
-  weaponCount: 2
-  orbitSpeed: 150

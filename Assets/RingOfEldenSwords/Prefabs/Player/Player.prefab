@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 114871673569860628}
   - component: {fileID: 114654745524214770}
   - component: {fileID: 114704504716019314}
-  - component: {fileID: 3069189779617488474}
+  - component: {fileID: 4961727835600931943}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -616,7 +616,7 @@ MonoBehaviour:
   AutoEquipOnlyIfEquipmentInventoryIsEmpty: 0
   AutoEquipOnRespawn: 1
   CharacterHandleWeapon: {fileID: 0}
---- !u!114 &3069189779617488474
+--- !u!114 &4961727835600931943
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -625,7 +625,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1790328835693532}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 028460b2d4d67430384598e0b24d814d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c67188f119944250bec64b8d4d9273c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   AbilityStartSfx: {fileID: 0}
@@ -637,13 +637,14 @@ MonoBehaviour:
   BlockingMovementStates: 
   BlockingConditionStates: 
   BlockingWeaponStates: 
-  weaponPrefab: {fileID: 0}
-  weaponCount: 3
-  orbitRadius: 2
-  orbitSpeed: 180
-  arrivalDuration: 0.5
-  spawnAngleOffset: -45
-  sweepCurve:
+  WeaponPrefab: {fileID: 6621402824395965232, guid: 0a756449108094335be8f1336be065a4,
+    type: 3}
+  WeaponCount: 12
+  OrbitRadius: 2
+  OrbitSpeed: 180
+  ArrivalDuration: 0.5
+  SpawnAngleOffset: -45
+  SweepCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
