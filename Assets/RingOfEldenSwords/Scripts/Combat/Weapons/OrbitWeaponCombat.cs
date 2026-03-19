@@ -6,14 +6,14 @@ using MoreMountains.TopDownEngine;
 namespace RingOfEldenSwords.Combat.Weapons
 {
     /// <summary>
-    /// Handles combat for an orbiting sword: clashing with enemy swords and
+    /// Handles combat for an orbiting weapon: clashing with enemy weapons and
     /// damaging characters. Faction is determined purely by GameObject tag
     /// ("Player" or "Enemy") — set by CharacterOrbitWeapons at spawn time,
     /// matching the TDE convention used everywhere else in the engine.
     /// </summary>
-    public class OrbitSwordCombat : MonoBehaviour
+    public class OrbitWeaponCombat : MonoBehaviour
     {
-        public enum SwordState { Active, Destroyed }
+        public enum WeaponState { Active, Destroyed }
 
         [Header("Combat Stats")]
         public float MaxHealth = 10f;
@@ -25,14 +25,14 @@ namespace RingOfEldenSwords.Combat.Weapons
         public float EntityHitCooldown = 0.5f;
 
         public event Action<GameObject> OnDestroyed;
-        public event Action<OrbitSwordCombat> OnClash;
+        public event Action<OrbitWeaponCombat> OnClash;
 
         public float CurrentHealth => _currentHealth;
-        public bool IsAlive => _currentHealth > 0f && _state == SwordState.Active;
+        public bool IsAlive => _currentHealth > 0f && _state == WeaponState.Active;
 
         private SpriteRenderer _spriteRenderer;
         private float _currentHealth;
-        private SwordState _state = SwordState.Active;
+        private WeaponState _state = WeaponState.Active;
         private bool _canClash = true;
         private bool _canHitEntity = true;
         private Coroutine _clashCooldown;
@@ -51,7 +51,7 @@ namespace RingOfEldenSwords.Combat.Weapons
         void OnEnable()
         {
             ResetHealth();
-            _state        = SwordState.Active;
+            _state        = WeaponState.Active;
             _canClash     = true;
             _canHitEntity = true;
             if (_clashCooldown  != null) { StopCoroutine(_clashCooldown);  _clashCooldown  = null; }
@@ -64,12 +64,12 @@ namespace RingOfEldenSwords.Combat.Weapons
             if (other.gameObject == gameObject) return;
             if (other.transform.IsChildOf(transform)) return;
 
-            // Clash check: other collider belongs to an enemy sword (different tag)
-            OrbitSwordCombat otherSword = other.GetComponentInParent<OrbitSwordCombat>();
-            if (_canClash && otherSword != null && otherSword != this
-                && !otherSword.gameObject.CompareTag(gameObject.tag) && otherSword.IsAlive)
+            // Clash check: other collider belongs to an enemy weapon (different tag)
+            OrbitWeaponCombat otherWeapon = other.GetComponentInParent<OrbitWeaponCombat>();
+            if (_canClash && otherWeapon != null && otherWeapon != this
+                && !otherWeapon.gameObject.CompareTag(gameObject.tag) && otherWeapon.IsAlive)
             {
-                PerformClash(otherSword);
+                PerformClash(otherWeapon);
                 return;
             }
 
@@ -83,14 +83,14 @@ namespace RingOfEldenSwords.Combat.Weapons
         public void ResetHealth()
         {
             _currentHealth = MaxHealth;
-            _state         = SwordState.Active;
+            _state         = WeaponState.Active;
         }
 
         public void TakeDamage(float amount)
         {
             if (!IsAlive) return;
             _currentHealth = Mathf.Max(0f, _currentHealth - amount);
-            if (_currentHealth <= 0f) DestroySword();
+            if (_currentHealth <= 0f) DestroyWeapon();
         }
 
         public void SetSprite(Sprite sprite)
@@ -120,12 +120,12 @@ namespace RingOfEldenSwords.Combat.Weapons
             }
         }
 
-        private void PerformClash(OrbitSwordCombat other)
+        private void PerformClash(OrbitWeaponCombat other)
         {
             OnClash?.Invoke(other);
             other.TakeDamage(ClashDamage);
             TakeDamage(other.ClashDamage);
-            // Start cooldown on both swords so neither can re-clash immediately
+            // Start cooldown on both weapons so neither can re-clash immediately
             if (IsAlive && _clashCooldown == null)
                 _clashCooldown = StartCoroutine(ClashCooldownRoutine());
             if (other.IsAlive && other._clashCooldown == null)
@@ -141,13 +141,13 @@ namespace RingOfEldenSwords.Combat.Weapons
         }
 
         /// <summary>
-        /// A player sword only damages enemies and vice versa — matches the
+        /// A player weapon only damages enemies and vice versa — matches the
         /// tag convention used by TDE's DamageOnTouch and Health systems.
         /// </summary>
         private bool CanDamageCharacter(Health tdeHealth)
         {
             if (tdeHealth.CurrentHealth <= 0f) return false;
-            // Player sword damages enemies; enemy sword damages players
+            // Player weapon damages enemies; enemy weapon damages players
             if (gameObject.CompareTag("Player") && !tdeHealth.gameObject.CompareTag("Enemy"))  return false;
             if (gameObject.CompareTag("Enemy")  && !tdeHealth.gameObject.CompareTag("Player")) return false;
             return true;
@@ -168,9 +168,9 @@ namespace RingOfEldenSwords.Combat.Weapons
             _entityCooldown = null;
         }
 
-        private void DestroySword()
+        private void DestroyWeapon()
         {
-            _state = SwordState.Destroyed;
+            _state = WeaponState.Destroyed;
             // Stop cooldown coroutines before destroy so they don't linger
             if (_clashCooldown  != null) { StopCoroutine(_clashCooldown);  _clashCooldown  = null; }
             if (_entityCooldown != null) { StopCoroutine(_entityCooldown); _entityCooldown = null; }

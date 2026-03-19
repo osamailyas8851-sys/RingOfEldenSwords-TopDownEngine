@@ -114,11 +114,11 @@ namespace RingOfEldenSwords.Character.Abilities
 
         // ─── Internal State ───────────────────────────────────────────────────────
 
-                /// pairs a sword GameObject with its OrbitSwordCombat component
+                /// pairs a weapon GameObject with its OrbitWeaponCombat component
         protected struct WeaponEntry
         {
-            public GameObject      Go;
-                        public OrbitSwordCombat Behaviour;
+            public GameObject       Go;
+            public OrbitWeaponCombat Behaviour;
         }
 
         /// all currently active (visible) swords in the orbit ring
@@ -410,8 +410,8 @@ protected virtual GameObject GetOrCreateWeapon(float spawnAngle, float targetAng
             weapon.tag = (_character.CharacterType == MoreMountains.TopDownEngine.Character.CharacterTypes.Player)
                 ? "Player" : "Enemy";
 
-            // Wire OrbitSwordCombat
-            var wb = weapon.GetComponent<OrbitSwordCombat>();
+            // Wire OrbitWeaponCombat
+            var wb = weapon.GetComponent<OrbitWeaponCombat>();
             if (wb != null)
             {
                 wb.ResetHealth();
@@ -450,7 +450,7 @@ protected virtual GameObject GetOrCreateWeapon(float spawnAngle, float targetAng
         // ─── Internal: Events ─────────────────────────────────────────────────────
 
         /// <summary>
-                /// Called when a sword's OrbitSwordCombat fires its OnDestroyed event.
+                /// Called when a weapon's OrbitWeaponCombat fires its OnDestroyed event.
         /// Removes the sword from the active list and fires OnWeaponDestroyed.
         /// </summary>
 protected virtual void HandleWeaponDestroyed(GameObject weapon)

@@ -7,8 +7,8 @@ namespace RingOfEldenSwords.Enemy
 {
     /// <summary>
     /// Attach to an enemy root alongside CharacterOrbitWeapons.
-    /// At spawn  : instantiates a hidden OrbitSwordPickup child and stamps it
-    ///             with the enemy's current sword count + sword sprite.
+    /// At spawn  : instantiates a hidden OrbitWeaponPickup child and stamps it
+    ///             with the enemy's current weapon count + weapon sprite.
     /// At death  : detaches the pickup, scatters it in the world, and activates it.
     ///             This happens inside Health.OnDeath (line 869 of Health.cs),
     ///             BEFORE TDE disables the model or destroys the root, so the
@@ -19,7 +19,7 @@ namespace RingOfEldenSwords.Enemy
     public class EnemyOrbitLoot : TopDownMonoBehaviour
     {
         [Header("Loot Settings")]
-        [Tooltip("Prefab with OrbitSwordPickup component to drop on death.")]
+        [Tooltip("Prefab with OrbitWeaponPickup component to drop on death.")]
         [SerializeField] private GameObject _pickupPrefab;
 
         [Tooltip("How far from the death position the pickup is scattered (world units).")]
@@ -27,7 +27,7 @@ namespace RingOfEldenSwords.Enemy
 
         // ── Internals ─────────────────────────────────────────────────────────
 
-        private OrbitSwordPickup _pickup;
+        private OrbitWeaponPickup _pickup;
         private Health _health;
 
         // ── Unity Lifecycle ───────────────────────────────────────────────────
@@ -69,7 +69,7 @@ protected virtual void Awake()
 
         /// <summary>
         /// Instantiates the pickup as a hidden child and stamps it with
-        /// the current sword count and sprite.
+        /// the current weapon count and sprite.
         /// </summary>
         private void SpawnHiddenPickup()
         {
@@ -87,11 +87,11 @@ protected virtual void Awake()
             }
 
             GameObject go = Instantiate(_pickupPrefab, transform.position, Quaternion.identity, transform);
-            _pickup = go.GetComponent<OrbitSwordPickup>();
+            _pickup = go.GetComponent<OrbitWeaponPickup>();
 
             if (_pickup == null)
             {
-                Debug.LogWarning($"[EnemyOrbitLoot] Pickup prefab on {gameObject.name} has no OrbitSwordPickup component.", this);
+                Debug.LogWarning($"[EnemyOrbitLoot] Pickup prefab on {gameObject.name} has no OrbitWeaponPickup component.", this);
                 return;
             }
 
@@ -99,7 +99,7 @@ protected virtual void Awake()
         }
 
         /// <summary>
-        /// Reads WeaponCount and sword sprite from CharacterOrbitWeapons,
+        /// Reads WeaponCount and weapon sprite from CharacterOrbitWeapons,
         /// then calls Init() on the hidden pickup.
         /// </summary>
         private void StampPickup()
@@ -108,23 +108,23 @@ protected virtual void Awake()
 
             CharacterOrbitWeapons orbit = GetComponent<CharacterOrbitWeapons>();
             int count = (orbit != null) ? Mathf.Max(1, orbit.WeaponCount) : 1;
-            Sprite sprite = GetSwordSprite(orbit);
+            Sprite sprite = GetWeaponSprite(orbit);
             _pickup.Init(count, sprite);
         }
 
         /// <summary>
-        /// Reads the sprite from the first active orbiting sword.
-        /// Falls back to the WeaponPrefab's SpriteRenderer if no swords are active.
+        /// Reads the sprite from the first active orbiting weapon.
+        /// Falls back to the WeaponPrefab's SpriteRenderer if no weapons are active.
         /// </summary>
-        private Sprite GetSwordSprite(CharacterOrbitWeapons orbit)
+        private Sprite GetWeaponSprite(CharacterOrbitWeapons orbit)
         {
             if (orbit == null) return null;
 
-            // Try first active sword in orbit ring
-            foreach (GameObject sword in orbit.Weapons)
+            // Try first active weapon in orbit ring
+            foreach (GameObject weapon in orbit.Weapons)
             {
-                if (sword == null) continue;
-                SpriteRenderer sr = sword.GetComponent<SpriteRenderer>();
+                if (weapon == null) continue;
+                SpriteRenderer sr = weapon.GetComponent<SpriteRenderer>();
                 if (sr != null && sr.sprite != null)
                     return sr.sprite;
             }

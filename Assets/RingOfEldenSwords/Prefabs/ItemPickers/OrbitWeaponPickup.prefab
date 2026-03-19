@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 5002339391808176610}
   - component: {fileID: 768215639205122435}
   m_Layer: 0
-  m_Name: OrbitSwordPickup
+  m_Name: OrbitWeaponPickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
