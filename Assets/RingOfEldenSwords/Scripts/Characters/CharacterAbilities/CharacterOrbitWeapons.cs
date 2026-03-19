@@ -45,6 +45,10 @@ namespace RingOfEldenSwords.Character.Abilities
         [Tooltip("The sword prefab to orbit. Assign once — never delete this script or the reference is lost.")]
         public GameObject WeaponPrefab;
 
+        /// the ScriptableObject that defines this character's weapon type (sprite, stats, tint)
+        [Tooltip("Defines weapon type for this character. Leave null to use the prefab's default values.")]
+        public OrbitWeaponDefinition WeaponDefinition;
+
         /// how many swords orbit the player at start and after respawn
         [Tooltip("How many swords orbit the player at game start and after respawn.")]
         public int WeaponCount = 3;
@@ -410,11 +414,14 @@ protected virtual GameObject GetOrCreateWeapon(float spawnAngle, float targetAng
             weapon.tag = (_character.CharacterType == MoreMountains.TopDownEngine.Character.CharacterTypes.Player)
                 ? "Player" : "Enemy";
 
-            // Wire OrbitWeaponCombat
+            // Wire OrbitWeaponCombat and apply weapon type data
             var wb = weapon.GetComponent<OrbitWeaponCombat>();
             if (wb != null)
             {
-                wb.ResetHealth();
+                if (WeaponDefinition != null)
+                    wb.ApplyDefinition(WeaponDefinition);
+                else
+                    wb.ResetHealth();
                 wb.OnDestroyed += HandleWeaponDestroyed;
             }
 

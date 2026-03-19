@@ -454,5 +454,5 @@ MonoBehaviour:
   Model: {fileID: 0}
   RequireCharacterComponent: 1
   RequirePlayerType: 1
-  _swordSprite: {fileID: 7130623673572074304}
+  _weaponSprite: {fileID: 7130623673572074304}
   _countText: {fileID: 8239837348246824816}

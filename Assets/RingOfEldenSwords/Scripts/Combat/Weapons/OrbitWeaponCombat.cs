@@ -93,31 +93,28 @@ namespace RingOfEldenSwords.Combat.Weapons
             if (_currentHealth <= 0f) DestroyWeapon();
         }
 
-        public void SetSprite(Sprite sprite)
-        {
-            if (_spriteRenderer != null && sprite != null)
-                _spriteRenderer.sprite = sprite;
-        }
-
         public Sprite GetSprite() => _spriteRenderer != null ? _spriteRenderer.sprite : null;
 
-        public void SetStats(float maxHealth = -1f, float clashDamage = -1f,
-                             int entityDamage = -1, float clashCooldown = -1f,
-                             float entityHitCooldown = -1f)
+        /// <summary>
+        /// Stamps all stats and visuals from a weapon definition onto this instance.
+        /// Called by CharacterOrbitWeapons immediately after retrieving from pool or instantiating.
+        /// Replaces any values set in the prefab — the SO is the single source of truth.
+        /// </summary>
+        public void ApplyDefinition(OrbitWeaponDefinition def)
         {
-            if (maxHealth    >= 0f) MaxHealth    = maxHealth;
-            if (clashDamage  >= 0f) ClashDamage  = clashDamage;
-            if (entityDamage >= 0)  EntityDamage = entityDamage;
-            if (clashCooldown >= 0f)
-            {
-                ClashCooldown = clashCooldown;
-                _waitClash    = new WaitForSeconds(clashCooldown);
-            }
-            if (entityHitCooldown >= 0f)
-            {
-                EntityHitCooldown = entityHitCooldown;
-                _waitEntity       = new WaitForSeconds(entityHitCooldown);
-            }
+            if (def == null) return;
+
+            MaxHealth         = def.MaxHealth;
+            ClashDamage       = def.ClashDamage;
+            EntityDamage      = def.EntityDamage;
+            ClashCooldown     = def.ClashCooldown;
+            EntityHitCooldown = def.EntityHitCooldown;
+            _waitClash        = new WaitForSeconds(def.ClashCooldown);
+            _waitEntity       = new WaitForSeconds(def.EntityHitCooldown);
+            ResetHealth();
+
+            if (_spriteRenderer != null && def.Sprite != null)
+                _spriteRenderer.sprite = def.Sprite;
         }
 
         private void PerformClash(OrbitWeaponCombat other)

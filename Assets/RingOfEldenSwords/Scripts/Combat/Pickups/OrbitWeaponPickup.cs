@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using MoreMountains.TopDownEngine;
 using RingOfEldenSwords.Character.Abilities;
+using RingOfEldenSwords.Combat.Weapons;
 
 namespace RingOfEldenSwords.Combat.Pickups
 {
@@ -14,17 +15,6 @@ namespace RingOfEldenSwords.Combat.Pickups
     [AddComponentMenu("RingOfEldenSwords/Items/Orbit Weapon Pickup")]
     public class OrbitWeaponPickup : PickableItem
     {
-
-protected override void Start()
-        {
-            base.Start();
-            // Auto-wire if not assigned in Inspector
-            if (_weaponSprite == null)
-                _weaponSprite = GetComponent<SpriteRenderer>();
-            if (_countText == null)
-                _countText = GetComponentInChildren<TextMeshPro>();
-        }
-
         [Header("Orbit Weapon Pickup")]
         [Tooltip("SpriteRenderer on this GameObject that shows the weapon sprite.")]
         [SerializeField] private SpriteRenderer _weaponSprite;
@@ -35,17 +25,46 @@ protected override void Start()
         /// <summary>How many weapons this pickup grants when collected.</summary>
         public int PickupCount { get; private set; } = 1;
 
+        /// <summary>
+        /// The weapon definition stamped by the enemy at spawn.
+        /// Passed to the player's CharacterOrbitWeapons on pick so they
+        /// receive the correct sword type, not just a count increase.
+        /// </summary>
+        public OrbitWeaponDefinition WeaponDefinition { get; private set; }
+
+        // ── Unity Lifecycle ───────────────────────────────────────────────────
+
+        protected void Awake()
+        {
+            // Wire in Awake so references are valid even when the object is
+            // still inactive — Init() is called before SetActive(true).
+            // includeInactive=true on all calls so inactive children are found too.
+            // _weaponSprite must be wired in the prefab Inspector — no auto-wire fallback
+            // because GetComponentInChildren would find the Background SR instead
+            if (_countText == null)
+                _countText = GetComponentInChildren<TextMeshPro>(true);
+        }
+
         // ── Initialisation ────────────────────────────────────────────────────
 
         /// <summary>
         /// Called by EnemyOrbitLoot immediately after the pickup is instantiated
-        /// (and again after enemy respawn) to stamp in the correct weapon count and sprite.
+        /// to stamp in the correct weapon definition, count, and sprite.
         /// </summary>
-        public void Init(int count, Sprite sprite)
+        public void Init(int count, OrbitWeaponDefinition definition)
         {
-            PickupCount = count;
+            PickupCount      = count;
+            WeaponDefinition = definition;
 
-            if (_weaponSprite != null)
+            // Resolve sprite: definition is the source of truth, fall back to existing
+            Sprite sprite = (definition != null) ? definition.Sprite : null;
+
+            Debug.Log($"[OrbitWeaponPickup] Init called — count={count} " +
+                      $"def={definition?.WeaponName ?? "NULL"} " +
+                      $"sprite={sprite?.name ?? "NULL"} " +
+                      $"_weaponSprite={(_weaponSprite != null ? _weaponSprite.gameObject.name : "NULL")}");
+
+            if (_weaponSprite != null && sprite != null)
                 _weaponSprite.sprite = sprite;
 
             if (_countText != null)
@@ -59,16 +78,22 @@ protected override void Start()
 
         /// <summary>
         /// Called by PickableItem.PickItem() after all validation passes.
-        /// Adds weapons to the picking character's orbit ring.
+        /// Adds weapons to the picking character's orbit ring AND upgrades
+        /// their WeaponDefinition to match the dropped sword type.
         /// </summary>
         protected override void Pick(GameObject picker)
         {
-            // Walk up to find CharacterOrbitWeapons (picker may be a collider child)
             CharacterOrbitWeapons orbit = picker.GetComponentInParent<CharacterOrbitWeapons>();
             if (orbit == null)
                 orbit = picker.GetComponent<CharacterOrbitWeapons>();
 
-            orbit?.AddWeapons(PickupCount);
+            if (orbit == null) return;
+
+            // Upgrade the player's weapon definition to the dropped sword type
+            if (WeaponDefinition != null)
+                orbit.WeaponDefinition = WeaponDefinition;
+
+            orbit.AddWeapons(PickupCount);
         }
     }
 }

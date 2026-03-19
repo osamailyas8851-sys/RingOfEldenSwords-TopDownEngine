@@ -2,18 +2,18 @@ using UnityEngine;
 using MoreMountains.TopDownEngine;
 using RingOfEldenSwords.Character.Abilities;
 using RingOfEldenSwords.Combat.Pickups;
+using RingOfEldenSwords.Combat.Weapons;
 
 namespace RingOfEldenSwords.Enemy
 {
     /// <summary>
     /// Attach to an enemy root alongside CharacterOrbitWeapons.
-    /// At spawn  : instantiates a hidden OrbitWeaponPickup child and stamps it
-    ///             with the enemy's current weapon count + weapon sprite.
-    /// At death  : detaches the pickup, scatters it in the world, and activates it.
-    ///             This happens inside Health.OnDeath (line 869 of Health.cs),
-    ///             BEFORE TDE disables the model or destroys the root, so the
-    ///             pickup is safely independent before the enemy disappears.
-    /// At respawn: re-instantiates and re-stamps the pickup for the next death.
+    /// At spawn  : instantiates a hidden OrbitWeaponPickup child (not yet stamped).
+    /// At death  : stamps the pickup with the live WeaponDefinition + count,
+    ///             detaches it, scatters it, and activates it.
+    ///             Stamping at death (not at spawn) guarantees CharacterOrbitWeapons
+    ///             has already run Initialization() and WeaponDefinition is valid.
+    /// At respawn: re-instantiates a fresh hidden pickup for the next death.
     /// </summary>
     [AddComponentMenu("RingOfEldenSwords/Enemy/Enemy Orbit Loot")]
     public class EnemyOrbitLoot : TopDownMonoBehaviour
@@ -28,11 +28,11 @@ namespace RingOfEldenSwords.Enemy
         // ── Internals ─────────────────────────────────────────────────────────
 
         private OrbitWeaponPickup _pickup;
-        private Health _health;
+        private Health            _health;
 
         // ── Unity Lifecycle ───────────────────────────────────────────────────
 
-protected virtual void Awake()
+        protected virtual void Awake()
         {
             _health = GetComponent<Health>();
         }
@@ -57,8 +57,7 @@ protected virtual void Awake()
         // ── Public API ────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Call this from a CharacterRespawn / respawn handler so the enemy
-        /// gets a fresh hidden pickup ready for the next death.
+        /// Call from a respawn handler so the enemy gets a fresh pickup for the next death.
         /// </summary>
         public virtual void OnRespawn()
         {
@@ -68,8 +67,9 @@ protected virtual void Awake()
         // ── Private Helpers ───────────────────────────────────────────────────
 
         /// <summary>
-        /// Instantiates the pickup as a hidden child and stamps it with
-        /// the current weapon count and sprite.
+        /// Instantiates the pickup as an inactive child — not yet stamped.
+        /// Stamping is deferred to HandleDeath() so it reads data after
+        /// CharacterOrbitWeapons.Initialization() has completed.
         /// </summary>
         private void SpawnHiddenPickup()
         {
@@ -79,7 +79,7 @@ protected virtual void Awake()
                 return;
             }
 
-            // Destroy previous pickup if it somehow still exists (edge case: rapid respawn)
+            // Destroy stale pickup from a previous life (rapid-respawn edge case)
             if (_pickup != null)
             {
                 Destroy(_pickup.gameObject);
@@ -92,62 +92,44 @@ protected virtual void Awake()
             if (_pickup == null)
             {
                 Debug.LogWarning($"[EnemyOrbitLoot] Pickup prefab on {gameObject.name} has no OrbitWeaponPickup component.", this);
-                return;
+                Destroy(go);
             }
-
-            StampPickup();
+            // Pickup stays inactive until HandleDeath activates it
         }
 
         /// <summary>
-        /// Reads WeaponCount and weapon sprite from CharacterOrbitWeapons,
-        /// then calls Init() on the hidden pickup.
+        /// Reads WeaponDefinition and WeaponCount from CharacterOrbitWeapons
+        /// and calls Init() on the pickup.
+        /// Called at death time — after Initialization() has run — so the
+        /// definition reference is guaranteed to be valid.
         /// </summary>
         private void StampPickup()
         {
             if (_pickup == null) return;
 
             CharacterOrbitWeapons orbit = GetComponent<CharacterOrbitWeapons>();
-            int count = (orbit != null) ? Mathf.Max(1, orbit.WeaponCount) : 1;
-            Sprite sprite = GetWeaponSprite(orbit);
-            _pickup.Init(count, sprite);
+            int                    count = (orbit != null) ? Mathf.Max(1, orbit.WeaponCount) : 1;
+            OrbitWeaponDefinition  def   = orbit != null ? orbit.WeaponDefinition : null;
+
+            Debug.Log($"[EnemyOrbitLoot] StampPickup — orbit={orbit != null} " +
+                      $"WeaponDefinition={def?.WeaponName ?? "NULL"} " +
+                      $"WeaponCount={count} on {gameObject.name}");
+
+            _pickup.Init(count, def);
         }
 
         /// <summary>
-        /// Reads the sprite from the first active orbiting weapon.
-        /// Falls back to the WeaponPrefab's SpriteRenderer if no weapons are active.
-        /// </summary>
-        private Sprite GetWeaponSprite(CharacterOrbitWeapons orbit)
-        {
-            if (orbit == null) return null;
-
-            // Try first active weapon in orbit ring
-            foreach (GameObject weapon in orbit.Weapons)
-            {
-                if (weapon == null) continue;
-                SpriteRenderer sr = weapon.GetComponent<SpriteRenderer>();
-                if (sr != null && sr.sprite != null)
-                    return sr.sprite;
-            }
-
-            // Fallback: read from WeaponPrefab directly
-            if (orbit.WeaponPrefab != null)
-            {
-                SpriteRenderer sr = orbit.WeaponPrefab.GetComponent<SpriteRenderer>();
-                if (sr != null) return sr.sprite;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Fires on Health.OnDeath (before TDE disables the model or destroys the root).
-        /// Detaches the pickup, positions it with scatter, and activates it.
+        /// Fires on Health.OnDeath — before TDE disables the model.
+        /// Stamps, detaches, scatters, and activates the pickup.
         /// </summary>
         private void HandleDeath()
         {
             if (_pickup == null) return;
 
-            // Detach from enemy — pickup is now a root scene object
+            // Stamp now — CharacterOrbitWeapons.Initialization() has already run
+            StampPickup();
+
+            // Detach from enemy so it survives the enemy being disabled/destroyed
             _pickup.transform.SetParent(null);
 
             // Random scatter around the death position
@@ -157,7 +139,7 @@ protected virtual void Awake()
             // Reveal the pickup
             _pickup.gameObject.SetActive(true);
 
-            // Clear reference — SpawnHiddenPickup will create a fresh one on respawn
+            // Clear reference — SpawnHiddenPickup creates a fresh one on respawn
             _pickup = null;
         }
     }

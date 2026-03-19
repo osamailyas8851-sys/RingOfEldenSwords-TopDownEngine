@@ -3021,7 +3021,7 @@ MonoBehaviour:
   Model: {fileID: 0}
   RequireCharacterComponent: 1
   RequirePlayerType: 1
-  _swordSprite: {fileID: 0}
+  _weaponSprite: {fileID: 0}
   _countText: {fileID: 0}
 --- !u!58 &502487394
 CircleCollider2D:
@@ -11281,7 +11281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8427377ab3d53425facf4c6511aa343b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 1561694053617324, guid: 1e67e5637dcdc425ab30394e0253fb18,
+  enemyPrefab: {fileID: 1844942877436214, guid: 07d6ddbf00e5f40a1b21fd20bd260f60,
     type: 3}
   enemyCount: 1
   areaCenter: {x: 0, y: 0}
@@ -12283,7 +12283,7 @@ MonoBehaviour:
   Model: {fileID: 0}
   RequireCharacterComponent: 1
   RequirePlayerType: 1
-  _swordSprite: {fileID: 0}
+  _weaponSprite: {fileID: 0}
   _countText: {fileID: 0}
 --- !u!58 &1953205217
 CircleCollider2D:
