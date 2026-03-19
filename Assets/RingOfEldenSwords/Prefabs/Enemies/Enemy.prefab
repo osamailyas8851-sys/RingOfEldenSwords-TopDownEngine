@@ -137,7 +137,6 @@ GameObject:
   - component: {fileID: 114472236543704332}
   - component: {fileID: 114113908976523258}
   - component: {fileID: 114778105809703722}
-  - component: {fileID: 2927698595917446635}
   - component: {fileID: 1136098858273815074}
   m_Layer: 13
   m_Name: Enemy
@@ -807,22 +806,6 @@ MonoBehaviour:
   TestMaxHealth: 100
   TestCurrentHealth: 25
   TestUpdateHealthButton: 0
---- !u!114 &2927698595917446635
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1561694053617324}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae15b6f554bdb4649a56846836ebd999, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pickupPrefab: {fileID: 3554038411061816688, guid: 350f239e6b8ab47c7b9c98485a8dc248,
-    type: 3}
-  minScatter: 0.8
-  maxScatter: 1.8
 --- !u!114 &1136098858273815074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -846,7 +829,7 @@ MonoBehaviour:
   BlockingWeaponStates: 
   WeaponPrefab: {fileID: 6621402824395965232, guid: 0a756449108094335be8f1336be065a4,
     type: 3}
-  WeaponCount: 2
+  WeaponCount: 8
   OrbitRadius: 2
   OrbitSpeed: 150
   ArrivalDuration: 0.5

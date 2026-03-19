@@ -99,17 +99,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 6621402824395965232}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e5ac558f3024a0fa9528706618c933, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ownerFaction: 0
-  baseMaxHealth: 10
-  baseClashDamage: 10
-  baseEntityDamage: 10
-  hitCooldown: 0.1
-  entityHitCooldown: 0.5
-  animator: {fileID: 0}
-  destroyDelay: 0
+  m_Script: {fileID: 11500000, guid: 0543d5c22a8724374ad53c7c4416ede0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  OwnerFaction: 0
+  MaxHealth: 10
+  ClashDamage: 10
+  EntityDamage: 10
+  ClashCooldown: 0.1
+  EntityHitCooldown: 0.5
 --- !u!50 &5052523778653764364
 Rigidbody2D:
   serializedVersion: 5
@@ -147,7 +145,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1555102317277031029}
   - component: {fileID: 8306200475031244620}
-  - component: {fileID: 6369903164733854934}
   m_Layer: 23
   m_Name: BladeHitbox
   m_TagString: Untagged
@@ -216,15 +213,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &6369903164733854934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6771869273668475468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f935016835e6a48848d6925f0ee1c155, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

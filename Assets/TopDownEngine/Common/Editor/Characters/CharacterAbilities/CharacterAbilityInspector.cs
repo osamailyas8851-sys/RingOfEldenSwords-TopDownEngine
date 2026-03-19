@@ -26,6 +26,8 @@ namespace MoreMountains.TopDownEngine
 		{
 			_propertiesToHide = new List<string>();
 
+			if (target == null) return;
+
 			AbilityStartSfx = this.serializedObject.FindProperty("AbilityStartSfx");
 			AbilityInProgressSfx = this.serializedObject.FindProperty("AbilityInProgressSfx");
 			AbilityStopSfx = this.serializedObject.FindProperty("AbilityStopSfx");

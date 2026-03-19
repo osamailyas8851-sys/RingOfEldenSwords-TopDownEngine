@@ -114,11 +114,11 @@ namespace RingOfEldenSwords.Character.Abilities
 
         // ─── Internal State ───────────────────────────────────────────────────────
 
-        /// pairs a sword GameObject with its optional WeaponBehaviour component
+                /// pairs a sword GameObject with its OrbitSwordCombat component
         protected struct WeaponEntry
         {
             public GameObject      Go;
-            public WeaponBehaviour Behaviour;
+                        public OrbitSwordCombat Behaviour;
         }
 
         /// all currently active (visible) swords in the orbit ring
@@ -249,10 +249,12 @@ namespace RingOfEldenSwords.Character.Abilities
         /// Called automatically by TDE when the character's health reaches 0.
         /// base.OnDeath() stops ability SFX and feedbacks.
         /// </summary>
-        protected override void OnDeath()
+protected override void OnDeath()
         {
             base.OnDeath();
             _isRotating = false;
+            // Defensively clear sword shield on death.
+            if (_health != null) _health.ImmuneToDamage = false;
         }
 
         /// <summary>
@@ -278,10 +280,10 @@ namespace RingOfEldenSwords.Character.Abilities
         /// Called by TDE on death before respawn — clean up state for the next life.
         /// Different from OnDeath: OnDeath reacts, ResetAbility prepares for respawn.
         /// </summary>
-        public override void ResetAbility()
+public override void ResetAbility()
         {
             base.ResetAbility();
-            ReturnAllWeaponsToPool();
+            ReturnAllWeaponsToPool(); // DamageEnabled() called inside ReturnAllWeaponsToPool()
         }
 
         /// <summary>
@@ -313,14 +315,17 @@ namespace RingOfEldenSwords.Character.Abilities
         /// Rebuilds the orbit ring with a new sword count.
         /// Returns all current swords to the pool, then spawns the new set.
         /// </summary>
-        public virtual void UpdateWeapons(int newWeaponCount)
+public virtual void UpdateWeapons(int newWeaponCount)
         {
             StopAllCoroutines();
-            WeaponCount      = newWeaponCount;
-            _weaponsArrived  = 0;
-            ReturnAllWeaponsToPool();
+            WeaponCount     = newWeaponCount;
+            _weaponsArrived = 0;
+            ReturnAllWeaponsToPool(); // also calls DamageEnabled() — shield OFF during sweep
             ChangeOrbitState(OrbitState.Spawning);
-            SpawnAndAnimateWeapons();
+            // Edge case: if newWeaponCount is 0, no swords spawn and OnWeaponArrived()
+            // is never called, so the character stays vulnerable — which is correct.
+            if (newWeaponCount > 0)
+                SpawnAndAnimateWeapons();
         }
 
         /// <summary>Starts pivot rotation.</summary>
@@ -333,7 +338,7 @@ namespace RingOfEldenSwords.Character.Abilities
         /// <summary>
         /// Deactivates all active swords and returns them to the pool for reuse.
         /// </summary>
-        protected virtual void ReturnAllWeaponsToPool()
+protected virtual void ReturnAllWeaponsToPool()
         {
             foreach (var entry in _activeWeapons)
             {
@@ -345,6 +350,9 @@ namespace RingOfEldenSwords.Character.Abilities
             }
             _activeWeapons.Clear();
             _isRotating = false;
+            // Remove sword shield — use ImmuneToDamage (never touched by TDE internally)
+            // so we don't interfere with TDE's own Invulnerable/post-hit coroutine.
+            if (_health != null) _health.ImmuneToDamage = false;
         }
 
         // ─── Internal: Spawn & Sweep ──────────────────────────────────────────────
@@ -375,7 +383,7 @@ namespace RingOfEldenSwords.Character.Abilities
         /// Retrieves a pooled sword or instantiates a new one, then positions it
         /// on the orbit circle at spawnAngle and sets up its components.
         /// </summary>
-        protected virtual GameObject GetOrCreateWeapon(float spawnAngle, float targetAngle)
+protected virtual GameObject GetOrCreateWeapon(float spawnAngle, float targetAngle)
         {
             if (WeaponPrefab == null)
             {
@@ -395,8 +403,13 @@ namespace RingOfEldenSwords.Character.Abilities
             weapon.transform.localPosition = OrbitPosition(spawnAngle);
             weapon.transform.localRotation = Quaternion.Euler(0f, 0f, spawnAngle + WeaponRotationOffset);
 
-            // Wire WeaponBehaviour if present
-            var wb = weapon.GetComponent<WeaponBehaviour>();
+            // Tag the sword to match the owner's TDE CharacterType —
+            // "Player" or "Enemy", the same tags TDE uses everywhere for faction checks.
+            weapon.tag = (_character.CharacterType == MoreMountains.TopDownEngine.Character.CharacterTypes.Player)
+                ? "Player" : "Enemy";
+
+            // Wire OrbitSwordCombat
+            var wb = weapon.GetComponent<OrbitSwordCombat>();
             if (wb != null)
             {
                 wb.ResetHealth();
@@ -404,8 +417,6 @@ namespace RingOfEldenSwords.Character.Abilities
             }
 
             // Force Kinematic — Dynamic Rigidbody2D lets physics fling swords away when player moves
-            // NOTE: use explicit null check, NOT ?? — Unity's GetComponent returns
-            // fake-null which fools the ?? operator, causing MissingComponentException
             Rigidbody2D rb = weapon.GetComponent<Rigidbody2D>();
             if (rb == null) rb = weapon.AddComponent<Rigidbody2D>();
             rb.bodyType     = RigidbodyType2D.Kinematic;
@@ -437,10 +448,10 @@ namespace RingOfEldenSwords.Character.Abilities
         // ─── Internal: Events ─────────────────────────────────────────────────────
 
         /// <summary>
-        /// Called when a sword's WeaponBehaviour fires its OnDestroyed event.
+                /// Called when a sword's OrbitSwordCombat fires its OnDestroyed event.
         /// Removes the sword from the active list and fires OnWeaponDestroyed.
         /// </summary>
-        protected virtual void HandleWeaponDestroyed(GameObject weapon)
+protected virtual void HandleWeaponDestroyed(GameObject weapon)
         {
             if (weapon == null) return;
             for (int i = 0; i < _activeWeapons.Count; i++)
@@ -452,6 +463,9 @@ namespace RingOfEldenSwords.Character.Abilities
                 break;
             }
             OnWeaponDestroyed?.Invoke(weapon);
+            // Last sword destroyed — remove sword shield.
+            if (_activeWeapons.Count == 0 && _health != null)
+                _health.ImmuneToDamage = false;
         }
 
         /// <summary>
@@ -510,7 +524,7 @@ namespace RingOfEldenSwords.Character.Abilities
         /// Called by each sword when it finishes its sweep coroutine.
         /// When all swords have arrived, fires OnSweepComplete and starts rotation.
         /// </summary>
-        protected virtual void OnWeaponArrived()
+protected virtual void OnWeaponArrived()
         {
             _weaponsArrived++;
             if (_weaponsArrived >= WeaponCount)
@@ -518,6 +532,13 @@ namespace RingOfEldenSwords.Character.Abilities
                 OnSweepComplete?.Invoke();
                 ChangeOrbitState(OrbitState.Orbiting);
                 StartOrbit();
+                // All swords are now orbiting — shield the owner.
+                // We use ImmuneToDamage instead of Invulnerable so we never
+                // conflict with TDE's own post-hit invincibility coroutine,
+                // which also writes to Invulnerable. ImmuneToDamage is a
+                // separate flag checked first in Health.CanTakeDamageThisFrame()
+                // and is never touched by TDE internally.
+                if (_health != null) _health.ImmuneToDamage = true;
             }
         }
 
