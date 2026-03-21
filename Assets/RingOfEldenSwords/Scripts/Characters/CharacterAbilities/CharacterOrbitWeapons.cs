@@ -169,7 +169,6 @@ namespace RingOfEldenSwords.Character.Abilities
             }
 
             _pivot = GetOrCreatePivot();
-            Debug.Log($"[CharacterOrbitWeapons] Initialization WeaponCount={WeaponCount} on {gameObject.name}");
             UpdateWeapons(WeaponCount);
         }
 
@@ -322,7 +321,6 @@ public override void ResetAbility()
         /// </summary>
 public virtual void UpdateWeapons(int newWeaponCount)
         {
-            Debug.Log($"[CharacterOrbitWeapons] UpdateWeapons({newWeaponCount}) on {gameObject.name}\n{System.Environment.StackTrace}");
             StopAllCoroutines();
             WeaponCount     = newWeaponCount;
             _weaponsArrived = 0;

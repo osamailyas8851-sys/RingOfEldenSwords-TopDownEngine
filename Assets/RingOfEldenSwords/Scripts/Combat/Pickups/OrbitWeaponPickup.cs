@@ -7,10 +7,10 @@ using RingOfEldenSwords.Combat.Weapons;
 namespace RingOfEldenSwords.Combat.Pickups
 {
     /// <summary>
-    /// A pickable item dropped by enemies on death.
-    /// Displays the enemy's weapon sprite and count.
-    /// Extends TDE's PickableItem so collision, player-type gating,
-    /// feedbacks and disable-on-pick are all handled by the base class.
+    /// A pickable item embedded as an inactive child of the enemy prefab.
+    /// On enemy death: stamped with weapon data, detached, scattered, activated.
+    /// On pickup: re-attached to the original enemy parent as inactive child — ready for reuse.
+    /// No Instantiate() or Destroy() ever occurs after scene load.
     /// </summary>
     [AddComponentMenu("RingOfEldenSwords/Items/Orbit Weapon Pickup")]
     public class OrbitWeaponPickup : PickableItem
@@ -26,9 +26,8 @@ namespace RingOfEldenSwords.Combat.Pickups
         public int PickupCount { get; private set; } = 1;
 
         /// <summary>
-        /// The weapon definition stamped by the enemy at spawn.
-        /// Passed to the player's CharacterOrbitWeapons on pick so they
-        /// receive the correct sword type, not just a count increase.
+        /// The weapon definition stamped by the enemy at death time.
+        /// Passed to the player's CharacterOrbitWeapons on pick.
         /// </summary>
         public OrbitWeaponDefinition WeaponDefinition { get; private set; }
 
@@ -38,31 +37,21 @@ namespace RingOfEldenSwords.Combat.Pickups
         {
             // Wire in Awake so references are valid even when the object is
             // still inactive — Init() is called before SetActive(true).
-            // includeInactive=true on all calls so inactive children are found too.
-            // _weaponSprite must be wired in the prefab Inspector — no auto-wire fallback
-            // because GetComponentInChildren would find the Background SR instead
             if (_countText == null)
                 _countText = GetComponentInChildren<TextMeshPro>(true);
         }
 
-        // ── Initialisation ────────────────────────────────────────────────────
+        // ── Public API ────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Called by EnemyOrbitLoot immediately after the pickup is instantiated
-        /// to stamp in the correct weapon definition, count, and sprite.
+        /// Called by EnemyOrbitLoot at death time to stamp weapon data onto this pickup.
         /// </summary>
         public void Init(int count, OrbitWeaponDefinition definition)
         {
             PickupCount      = count;
             WeaponDefinition = definition;
 
-            // Resolve sprite: definition is the source of truth, fall back to existing
             Sprite sprite = (definition != null) ? definition.Sprite : null;
-
-            Debug.Log($"[OrbitWeaponPickup] Init called — count={count} " +
-                      $"def={definition?.WeaponName ?? "NULL"} " +
-                      $"sprite={sprite?.name ?? "NULL"} " +
-                      $"_weaponSprite={(_weaponSprite != null ? _weaponSprite.gameObject.name : "NULL")}");
 
             if (_weaponSprite != null && sprite != null)
                 _weaponSprite.sprite = sprite;
@@ -78,8 +67,8 @@ namespace RingOfEldenSwords.Combat.Pickups
 
         /// <summary>
         /// Called by PickableItem.PickItem() after all validation passes.
-        /// Adds weapons to the picking character's orbit ring AND upgrades
-        /// their WeaponDefinition to match the dropped sword type.
+        /// Adds weapons to the picking character's orbit ring, upgrades their
+        /// WeaponDefinition, then re-attaches this pickup to the enemy for reuse.
         /// </summary>
         protected override void Pick(GameObject picker)
         {
@@ -89,7 +78,6 @@ namespace RingOfEldenSwords.Combat.Pickups
 
             if (orbit == null) return;
 
-            // Upgrade the player's weapon definition to the dropped sword type
             if (WeaponDefinition != null)
                 orbit.WeaponDefinition = WeaponDefinition;
 
