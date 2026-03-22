@@ -10940,7 +10940,7 @@ MonoBehaviour:
         Active: 1
         UniqueID: -817997648
         Label: Sound
-        OriginalLabel: 
+        OriginalLabel: Sound
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
@@ -11065,7 +11065,7 @@ MonoBehaviour:
         Active: 1
         UniqueID: 1532773414
         Label: Particles
-        OriginalLabel: 
+        OriginalLabel: Particles Play
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}

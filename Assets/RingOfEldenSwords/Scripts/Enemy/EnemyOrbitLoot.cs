@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using MoreMountains.TopDownEngine;
 using RingOfEldenSwords.Character.Abilities;
@@ -8,12 +9,13 @@ namespace RingOfEldenSwords.Enemy
 {
     /// <summary>
     /// Attach to an enemy root alongside CharacterOrbitWeapons.
-    /// Requires an OrbitWeaponPickup to be embedded as an inactive child
-    /// of the enemy prefab in the Editor — no Instantiate() ever occurs.
+    /// Requires an OrbitWeaponPickup embedded as an inactive child of the enemy prefab.
     ///
-    /// At scene load : finds the child pickup, stamps weapon data once (Start).
-    /// At death      : scatters and activates the already-stamped pickup.
-    /// At respawn    : deactivates the pickup — ready for next death cycle.
+    /// At scene load : stamps weapon data, then pre-warms PickableItem.Start() +
+    ///                 MMFeedbacks.Initialization() via a two-frame coroutine so
+    ///                 the first real SetActive(true) at death is lag-free.
+    /// At death      : detaches, scatters, and activates the already-warmed pickup.
+    /// At respawn    : re-attaches the pickup as an inactive child, ready for reuse.
     /// </summary>
     [AddComponentMenu("RingOfEldenSwords/Enemy/Enemy Orbit Loot")]
     public class EnemyOrbitLoot : TopDownMonoBehaviour
@@ -26,6 +28,7 @@ namespace RingOfEldenSwords.Enemy
 
         private OrbitWeaponPickup _pickup;
         private Health            _health;
+        private bool              _warmed;
 
         // ── Unity Lifecycle ───────────────────────────────────────────────────
 
@@ -33,91 +36,95 @@ namespace RingOfEldenSwords.Enemy
         {
             _health = GetComponent<Health>();
 
-            // Find the embedded pickup child — includeInactive=true is required
-            // because the pickup starts inactive in the prefab.
+            // includeInactive=true required — pickup starts inactive in prefab.
             _pickup = GetComponentInChildren<OrbitWeaponPickup>(true);
 
             if (_pickup == null)
-            {
-                Debug.LogWarning($"[EnemyOrbitLoot] No OrbitWeaponPickup found as child of {gameObject.name}. " +
+                Debug.LogWarning($"[EnemyOrbitLoot] No OrbitWeaponPickup child found on {gameObject.name}. " +
                                  "Add OrbitWeaponPickup as an inactive child in the prefab.", this);
-                return;
-            }
-
-            // Force PickableItem.Start() to run NOW at scene load, not at first
-            // SetActive(true) on death. This pre-warms MMFeedbacks.Initialization()
-            // so there is zero cost when the pickup is revealed at death time.
-            _pickup.gameObject.SetActive(true);
-            _pickup.gameObject.SetActive(false);
         }
 
         protected virtual void Start()
         {
-            if (_pickup == null)
-            {
-                Debug.LogWarning($"[EnemyOrbitLoot] Start: _pickup is null on {gameObject.name}");
-                return;
-            }
+            if (_pickup == null) return;
 
-            CharacterOrbitWeapons orbit = GetComponent<CharacterOrbitWeapons>();
-            Debug.Log($"[EnemyOrbitLoot] Start: orbit={orbit != null} def={orbit?.WeaponDefinition?.WeaponName ?? "NULL"} count={orbit?.WeaponCount}");
-
-            // Stamp weapon data once at spawn — CharacterOrbitWeapons.Initialization()
-            // has run by now so WeaponDefinition and WeaponCount are valid.
+            // Stamp weapon data — CharacterOrbitWeapons.Initialization() has run by now.
             StampPickup();
+
+            // Pre-warm: activate for one frame so PickableItem.Start() and
+            // MMFeedbacks.Initialization() run at scene-load time (invisible to
+            // the player), not at death time (visible freeze).
+            // Same-frame toggle is useless — Unity defers Start() to end-of-frame
+            // and cancels it if the object is immediately deactivated again.
+            // The coroutine ensures activation persists for at least one full frame.
+            StartCoroutine(PreWarmPickup());
         }
 
         protected virtual void OnEnable()
         {
-            if (_health != null)
-                _health.OnDeath += HandleDeath;
+            if (_health != null) _health.OnDeath += HandleDeath;
         }
 
         protected virtual void OnDisable()
         {
-            if (_health != null)
-                _health.OnDeath -= HandleDeath;
+            if (_health != null) _health.OnDeath -= HandleDeath;
         }
 
         // ── Public API ────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Call from a respawn handler to hide the pickup — ready for next death cycle.
-        /// </summary>
+        /// <summary>Call from a respawn handler to reset the pickup for the next death cycle.</summary>
         public virtual void OnRespawn()
         {
             if (_pickup == null) return;
             _pickup.gameObject.SetActive(false);
+            _pickup.transform.SetParent(transform);
+            StampPickup();
         }
 
         // ── Private Helpers ───────────────────────────────────────────────────
 
         /// <summary>
-        /// Reads WeaponDefinition and WeaponCount from CharacterOrbitWeapons
-        /// and stamps them onto the pickup. Called at death time — after
-        /// CharacterOrbitWeapons.Initialization() has run — so data is valid.
+        /// Activates the pickup for exactly one frame so Unity runs
+        /// PickableItem.Start() and MMFeedbacks.Initialization() now,
+        /// then hides it again — all during scene load, invisible to the player.
         /// </summary>
+        private IEnumerator PreWarmPickup()
+        {
+            _pickup.gameObject.SetActive(true);   // Start() queued for this frame
+            yield return null;                     // let the frame complete → Start() runs
+            if (!_warmed)                          // only hide if death hasn't fired yet
+                _pickup.gameObject.SetActive(false);
+            _warmed = true;
+        }
+
+        /// <summary>Stamps weapon data from CharacterOrbitWeapons onto the pickup.</summary>
         private void StampPickup()
         {
             CharacterOrbitWeapons orbit = GetComponent<CharacterOrbitWeapons>();
             int                   count = (orbit != null) ? Mathf.Max(1, orbit.WeaponCount) : 1;
-            OrbitWeaponDefinition def   = orbit != null ? orbit.WeaponDefinition : null;
+            OrbitWeaponDefinition def   = orbit?.WeaponDefinition;
             _pickup.Init(count, def);
         }
 
         /// <summary>
-        /// Fires on Health.OnDeath. Scatters and activates the embedded pickup.
-        /// Data was already stamped in Start() — zero work at death time.
+        /// Fires on Health.OnDeath.
+        /// Detaches the pickup from the enemy, scatters it, and reveals it.
+        /// MMFeedbacks is already initialized — no lag spike.
         /// </summary>
         private void HandleDeath()
         {
             if (_pickup == null) return;
 
+            _warmed = true; // prevent PreWarm coroutine from hiding it after death
+
+            // Detach so the pickup survives the enemy being disabled/destroyed
+            _pickup.transform.SetParent(null);
+
             // Scatter around the death position
             Vector2 scatter = Random.insideUnitCircle.normalized * _scatterRadius;
             _pickup.transform.position = transform.position + new Vector3(scatter.x, scatter.y, 0f);
 
-            // Reveal the pickup
+            // Reveal — MMFeedbacks already initialized, this is now lag-free
             _pickup.gameObject.SetActive(true);
         }
     }
