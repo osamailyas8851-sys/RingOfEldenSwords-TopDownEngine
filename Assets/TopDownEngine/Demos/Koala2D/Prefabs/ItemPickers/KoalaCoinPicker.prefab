@@ -25,12 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1021789128737822}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.77699995, z: -0.052117262}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4546384692137108}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &212054338620499492
 SpriteRenderer:
@@ -43,11 +44,15 @@ SpriteRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -85,7 +90,7 @@ SpriteRenderer:
   m_SpriteSortPoint: 0
 --- !u!95 &95569988844767968
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -99,6 +104,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -131,16 +137,17 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1136408400419902}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 40.75, y: -10.13, z: 0.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4021539432022318}
   - {fileID: 4550216794149066}
   - {fileID: 793731431198832622}
   - {fileID: 5261182415094113939}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &61290638805382780
 BoxCollider2D:
@@ -150,11 +157,32 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1136408400419902}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 1
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: -0.12}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -165,7 +193,6 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 1.2, y: 1.4}
   m_EdgeRadius: 0
 --- !u!114 &114029223409458306
@@ -266,17 +293,18 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1437768596201436}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4968739561898144}
   m_Father: {fileID: 4546384692137108}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &95243579942162096
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -290,6 +318,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -320,12 +349,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1632621054671760}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4021539432022318}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &212519941297183702
 SpriteRenderer:
@@ -338,11 +368,15 @@ SpriteRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -380,7 +414,7 @@ SpriteRenderer:
   m_SpriteSortPoint: 0
 --- !u!95 &95058578725568570
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -394,6 +428,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -423,12 +458,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5022976712188621777}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4546384692137108}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8063560708483998443
 MonoBehaviour:
@@ -457,6 +493,7 @@ MonoBehaviour:
   ForceTimescaleMode: 0
   ForcedTimescaleMode: 1
   DurationMultiplier: 1
+  TimescaleMultiplier: 1
   RandomizeDuration: 0
   RandomDurationMultiplier: {x: 0.5, y: 1.5}
   DisplayFullDurationDetails: 0
@@ -506,10 +543,13 @@ MonoBehaviour:
     OnPause:
       m_PersistentCalls:
         m_Calls: []
+    OnStop:
+      m_PersistentCalls:
+        m_Calls: []
     OnResume:
       m_PersistentCalls:
         m_Calls: []
-    OnRevert:
+    OnChangeDirection:
       m_PersistentCalls:
         m_Calls: []
     OnComplete:
@@ -521,29 +561,44 @@ MonoBehaviour:
     OnSkipToTheEnd:
       m_PersistentCalls:
         m_Calls: []
+    OnInitializationComplete:
+      m_PersistentCalls:
+        m_Calls: []
+    OnEnable:
+      m_PersistentCalls:
+        m_Calls: []
+    OnDisable:
+      m_PersistentCalls:
+        m_Calls: []
   DebugActive: 0
+  InScriptDrivenPause: 0
   FeedbacksList:
-  - id: 0
-  - id: 1
-  - id: 2
-  - id: 3
+  - rid: 0
+  - rid: 1
+  - rid: 2
+  - rid: 3
   KeepPlayModeChanges: 0
   PerformanceMode: 0
+  RestoreInitialValuesOnDisable: 0
   StopFeedbacksOnDisable: 0
   PlayCount: 0
+  MMF_ChannelMode: 0
+  MMF_Channel: 0
+  MMF_ChannelDefinition: {fileID: 0}
   references:
-    version: 1
-    00000000:
-      type: {class: MMF_Sound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
+    version: 2
+    RefIds:
+    - rid: 0
+      type: {class: MMF_Sound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Tools}
       data:
         Active: 1
         UniqueID: -440613796
         Label: Sound
+        OriginalLabel: 
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
         Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
         Timing:
           TimescaleMode: 0
           ExcludeFromHoldingPauses: 0
@@ -554,6 +609,10 @@ MonoBehaviour:
           NumberOfRepeats: 0
           RepeatForever: 0
           DelayBetweenRepeats: 1
+          PlayCount: 0
+          LimitPlayCount: 0
+          MaxPlayCount: 3
+          SetPlayCountToZeroOnReset: 0
           MMFeedbacksDirectionCondition: 0
           PlayDirection: 0
           ConstantIntensity: 0
@@ -599,6 +658,8 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         RemapRangeFalloff: {x: 0, y: 1}
+        AutomaticShakerSetupButton:
+          ButtonText: Automatic Shaker Setup
         Owner: {fileID: 8063560708483998443}
         DebugActive: 0
         Sfx: {fileID: 8300000, guid: 53d7a3adf877b4b72b7ec879fd0c0c75, type: 3}
@@ -609,6 +670,7 @@ MonoBehaviour:
           ButtonText: Debug Stop Sound
         PlayMethod: 0
         PoolSize: 10
+        UseLegacyEventsMode: 0
         StopSoundOnFeedbackStop: 1
         MinVolume: 1
         MaxVolume: 1
@@ -651,17 +713,17 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-    00000001:
-      type: {class: MMF_InstantiateObject, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+    - rid: 1
+      type: {class: MMF_InstantiateObject, ns: MoreMountains.Feedbacks, asm: MoreMountains.Tools}
       data:
         Active: 1
         UniqueID: -22140030
         Label: Instantiate Object
+        OriginalLabel: 
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
         Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
         Timing:
           TimescaleMode: 0
           ExcludeFromHoldingPauses: 0
@@ -672,6 +734,10 @@ MonoBehaviour:
           NumberOfRepeats: 0
           RepeatForever: 0
           DelayBetweenRepeats: 1
+          PlayCount: 0
+          LimitPlayCount: 0
+          MaxPlayCount: 3
+          SetPlayCountToZeroOnReset: 0
           MMFeedbacksDirectionCondition: 0
           PlayDirection: 0
           ConstantIntensity: 0
@@ -717,6 +783,8 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         RemapRangeFalloff: {x: 0, y: 1}
+        AutomaticShakerSetupButton:
+          ButtonText: 
         Owner: {fileID: 8063560708483998443}
         DebugActive: 0
         GameObjectToInstantiate: {fileID: 1381411408848946, guid: 096fea04a94809d47b8855d14e80f500,
@@ -734,18 +802,19 @@ MonoBehaviour:
         CreateObjectPool: 0
         ObjectPoolSize: 5
         MutualizePools: 0
-    00000002:
+        PoolParentTransform: {fileID: 0}
+    - rid: 2
       type: {class: MMF_LensDistortion, ns: MoreMountains.FeedbacksForThirdParty,
-        asm: MoreMountains.Feedbacks.PostProcessing}
+        asm: MoreMountains.Tools}
       data:
         Active: 1
         UniqueID: -1883281269
         Label: Lens Distortion
+        OriginalLabel: 
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
         Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
         Timing:
           TimescaleMode: 0
           ExcludeFromHoldingPauses: 0
@@ -756,6 +825,10 @@ MonoBehaviour:
           NumberOfRepeats: 0
           RepeatForever: 0
           DelayBetweenRepeats: 1
+          PlayCount: 0
+          LimitPlayCount: 0
+          MaxPlayCount: 3
+          SetPlayCountToZeroOnReset: 0
           MMFeedbacksDirectionCondition: 0
           PlayDirection: 0
           ConstantIntensity: 0
@@ -801,6 +874,8 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         RemapRangeFalloff: {x: 0, y: 1}
+        AutomaticShakerSetupButton:
+          ButtonText: Automatic Shaker Setup
         Owner: {fileID: 8063560708483998443}
         DebugActive: 0
         Duration: 0.8
@@ -905,17 +980,17 @@ MonoBehaviour:
           m_RotationOrder: 4
         RemapIntensityZero: 0
         RemapIntensityOne: 20
-    00000003:
-      type: {class: MMF_Flash, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+    - rid: 3
+      type: {class: MMF_Flash, ns: MoreMountains.Feedbacks, asm: MoreMountains.Tools}
       data:
         Active: 1
         UniqueID: -1501354257
         Label: Flash
+        OriginalLabel: 
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
         Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
         Timing:
           TimescaleMode: 0
           ExcludeFromHoldingPauses: 0
@@ -926,6 +1001,10 @@ MonoBehaviour:
           NumberOfRepeats: 0
           RepeatForever: 0
           DelayBetweenRepeats: 1
+          PlayCount: 0
+          LimitPlayCount: 0
+          MaxPlayCount: 3
+          SetPlayCountToZeroOnReset: 0
           MMFeedbacksDirectionCondition: 0
           PlayDirection: 0
           ConstantIntensity: 0
@@ -971,12 +1050,15 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         RemapRangeFalloff: {x: 0, y: 1}
+        AutomaticShakerSetupButton:
+          ButtonText: Automatic Shaker Setup
         Owner: {fileID: 8063560708483998443}
         DebugActive: 0
         FlashColor: {r: 1, g: 0.9606119, b: 0, a: 1}
         FlashDuration: 0.1
         FlashAlpha: 0.3
         FlashID: 0
+        TargetFlash: {fileID: 0}
 --- !u!1 &8570817455174603625
 GameObject:
   m_ObjectHideFlags: 0
@@ -1001,12 +1083,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8570817455174603625}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4546384692137108}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7887479068797439920
 MonoBehaviour:
@@ -1035,6 +1118,7 @@ MonoBehaviour:
   ForceTimescaleMode: 0
   ForcedTimescaleMode: 1
   DurationMultiplier: 1
+  TimescaleMultiplier: 1
   RandomizeDuration: 0
   RandomDurationMultiplier: {x: 0.5, y: 1.5}
   DisplayFullDurationDetails: 0
@@ -1084,10 +1168,13 @@ MonoBehaviour:
     OnPause:
       m_PersistentCalls:
         m_Calls: []
+    OnStop:
+      m_PersistentCalls:
+        m_Calls: []
     OnResume:
       m_PersistentCalls:
         m_Calls: []
-    OnRevert:
+    OnChangeDirection:
       m_PersistentCalls:
         m_Calls: []
     OnComplete:
@@ -1099,29 +1186,44 @@ MonoBehaviour:
     OnSkipToTheEnd:
       m_PersistentCalls:
         m_Calls: []
+    OnInitializationComplete:
+      m_PersistentCalls:
+        m_Calls: []
+    OnEnable:
+      m_PersistentCalls:
+        m_Calls: []
+    OnDisable:
+      m_PersistentCalls:
+        m_Calls: []
   DebugActive: 0
+  InScriptDrivenPause: 0
   FeedbacksList:
-  - id: 0
-  - id: 1
-  - id: 2
-  - id: 3
+  - rid: 0
+  - rid: 1
+  - rid: 2
+  - rid: 3
   KeepPlayModeChanges: 0
   PerformanceMode: 0
+  RestoreInitialValuesOnDisable: 0
   StopFeedbacksOnDisable: 0
   PlayCount: 0
+  MMF_ChannelMode: 0
+  MMF_Channel: 0
+  MMF_ChannelDefinition: {fileID: 0}
   references:
-    version: 1
-    00000000:
-      type: {class: MMF_Sound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
+    version: 2
+    RefIds:
+    - rid: 0
+      type: {class: MMF_Sound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Tools}
       data:
         Active: 1
         UniqueID: -545451407
         Label: Sound
+        OriginalLabel: Sound
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
         Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
         Timing:
           TimescaleMode: 0
           ExcludeFromHoldingPauses: 0
@@ -1132,6 +1234,10 @@ MonoBehaviour:
           NumberOfRepeats: 0
           RepeatForever: 0
           DelayBetweenRepeats: 1
+          PlayCount: 0
+          LimitPlayCount: 0
+          MaxPlayCount: 3
+          SetPlayCountToZeroOnReset: 0
           MMFeedbacksDirectionCondition: 0
           PlayDirection: 0
           ConstantIntensity: 0
@@ -1177,6 +1283,8 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         RemapRangeFalloff: {x: 0, y: 1}
+        AutomaticShakerSetupButton:
+          ButtonText: Automatic Shaker Setup
         Owner: {fileID: 7887479068797439920}
         DebugActive: 0
         Sfx: {fileID: 8300000, guid: 665dcf18550f16f4eab039e2302f0d5f, type: 3}
@@ -1187,6 +1295,7 @@ MonoBehaviour:
           ButtonText: Debug Stop Sound
         PlayMethod: 0
         PoolSize: 10
+        UseLegacyEventsMode: 0
         StopSoundOnFeedbackStop: 1
         MinVolume: 1
         MaxVolume: 1
@@ -1229,17 +1338,17 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-    00000001:
-      type: {class: MMF_InstantiateObject, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+    - rid: 1
+      type: {class: MMF_InstantiateObject, ns: MoreMountains.Feedbacks, asm: MoreMountains.Tools}
       data:
         Active: 1
         UniqueID: 831860998
         Label: Instantiate Object
+        OriginalLabel: Instantiate Object
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
         Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
         Timing:
           TimescaleMode: 0
           ExcludeFromHoldingPauses: 0
@@ -1250,6 +1359,10 @@ MonoBehaviour:
           NumberOfRepeats: 0
           RepeatForever: 0
           DelayBetweenRepeats: 1
+          PlayCount: 0
+          LimitPlayCount: 0
+          MaxPlayCount: 3
+          SetPlayCountToZeroOnReset: 0
           MMFeedbacksDirectionCondition: 0
           PlayDirection: 0
           ConstantIntensity: 0
@@ -1295,6 +1408,8 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         RemapRangeFalloff: {x: 0, y: 1}
+        AutomaticShakerSetupButton:
+          ButtonText: 
         Owner: {fileID: 7887479068797439920}
         DebugActive: 0
         GameObjectToInstantiate: {fileID: 4436764824198135487, guid: d88b268321284024c91d46a128981f88,
@@ -1312,18 +1427,19 @@ MonoBehaviour:
         CreateObjectPool: 0
         ObjectPoolSize: 5
         MutualizePools: 0
-    00000002:
+        PoolParentTransform: {fileID: 0}
+    - rid: 2
       type: {class: MMF_LensDistortion, ns: MoreMountains.FeedbacksForThirdParty,
-        asm: MoreMountains.Feedbacks.PostProcessing}
+        asm: MoreMountains.Tools}
       data:
         Active: 1
         UniqueID: 1915792774
         Label: Lens Distortion
+        OriginalLabel: Lens Distortion
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
         Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
         Timing:
           TimescaleMode: 0
           ExcludeFromHoldingPauses: 0
@@ -1334,6 +1450,10 @@ MonoBehaviour:
           NumberOfRepeats: 0
           RepeatForever: 0
           DelayBetweenRepeats: 1
+          PlayCount: 0
+          LimitPlayCount: 0
+          MaxPlayCount: 3
+          SetPlayCountToZeroOnReset: 0
           MMFeedbacksDirectionCondition: 0
           PlayDirection: 0
           ConstantIntensity: 0
@@ -1379,6 +1499,8 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         RemapRangeFalloff: {x: 0, y: 1}
+        AutomaticShakerSetupButton:
+          ButtonText: Automatic Shaker Setup
         Owner: {fileID: 7887479068797439920}
         DebugActive: 0
         Duration: 0.8
@@ -1483,17 +1605,17 @@ MonoBehaviour:
           m_RotationOrder: 4
         RemapIntensityZero: 0
         RemapIntensityOne: 20
-    00000003:
-      type: {class: MMF_Flash, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+    - rid: 3
+      type: {class: MMF_Flash, ns: MoreMountains.Feedbacks, asm: MoreMountains.Tools}
       data:
         Active: 1
         UniqueID: 1395079797
         Label: Flash
+        OriginalLabel: Flash
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
         Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
         Timing:
           TimescaleMode: 0
           ExcludeFromHoldingPauses: 0
@@ -1504,6 +1626,10 @@ MonoBehaviour:
           NumberOfRepeats: 0
           RepeatForever: 0
           DelayBetweenRepeats: 1
+          PlayCount: 0
+          LimitPlayCount: 0
+          MaxPlayCount: 3
+          SetPlayCountToZeroOnReset: 0
           MMFeedbacksDirectionCondition: 0
           PlayDirection: 0
           ConstantIntensity: 0
@@ -1549,9 +1675,12 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         RemapRangeFalloff: {x: 0, y: 1}
+        AutomaticShakerSetupButton:
+          ButtonText: Automatic Shaker Setup
         Owner: {fileID: 7887479068797439920}
         DebugActive: 0
         FlashColor: {r: 1, g: 0.9606119, b: 0, a: 1}
         FlashDuration: 0.1
         FlashAlpha: 0.3
         FlashID: 0
+        TargetFlash: {fileID: 0}
