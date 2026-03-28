@@ -69,21 +69,17 @@ namespace MoreMountains.TopDownEngine
         }
 
         /// <summary>
-        /// Forwards weapon data to the spawned pickup.
-        /// Override this in a subclass (or implement the pickup component) to
-        /// consume definition and count once OrbitWeaponPicker is written.
-        ///
-        /// Example implementation when the pickup script exists:
-        ///   var picker = pickup.GetComponent&lt;OrbitWeaponPicker&gt;();
-        ///   if (picker != null) picker.Setup(definition, count);
+        /// Forwards weapon data to the spawned pickup by calling Initialize()
+        /// on its PickableItemExtended component.
         /// </summary>
         protected virtual void ApplyWeaponDataToPickup(
             GameObject pickup,
             OrbitWeaponDefinition definition,
             int count)
         {
-            Debug.Log($"[LootExtended] WeaponDefinition: {(definition != null ? definition.name : "null")}");
-            Debug.Log($"[LootExtended] ActiveWeaponCount: {count}");
+
+            var picker = pickup.GetComponent<PickableItemExtended>();
+            if (picker != null) picker.Initialize(definition, count);
         }
 
         // ─── Pool Warmup ──────────────────────────────────────────────────────────

@@ -324,10 +324,14 @@ namespace RingOfEldenSwords.Character.Abilities
         /// Adds swords to the current orbit ring.
         /// Safe to call with count = 0 (no-op).
         /// Typically called by WeaponPickup when the player collects a dropped sword.
+        /// If definition is provided, it replaces the player's current WeaponDefinition
+        /// so the newly spawned swords use the picked-up weapon's type (sprite, stats).
+        /// Pass null to keep the player's existing WeaponDefinition unchanged.
         /// </summary>
-        public virtual void AddWeapons(int count)
+        public virtual void AddWeapons(int count, OrbitWeaponDefinition definition = null)
         {
             if (count <= 0) return;
+            if (definition != null) WeaponDefinition = definition;
             UpdateWeapons(_activeWeapons.Count + count);
         }
 

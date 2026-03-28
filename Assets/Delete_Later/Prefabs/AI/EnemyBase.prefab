@@ -1084,8 +1084,6 @@ MonoBehaviour:
   GizmosColor: {r: 0.827451, g: 0.827451, b: 0.827451, a: 1}
   GimosSize: 1
   SpawnLootButton: 0
-  WeaponDefinition: {fileID: 0}
-  WeaponCount: 1
 --- !u!114 &-1326594914606010313
 MonoBehaviour:
   m_ObjectHideFlags: 0
