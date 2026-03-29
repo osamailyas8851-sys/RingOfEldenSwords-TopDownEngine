@@ -37,6 +37,10 @@ namespace MoreMountains.TopDownEngine
         {
             _weaponsOrbit = GetComponent<CharacterWeaponsOrbit>();
 
+            if (_weaponsOrbit == null)
+                Debug.LogWarning($"[LootExtended] No CharacterWeaponsOrbit found on {gameObject.name}. " +
+                                 "Weapon data will be empty on loot drops.", this);
+
             if (PoolLoot)
                 StartCoroutine(WarmupPooledLoot());
         }

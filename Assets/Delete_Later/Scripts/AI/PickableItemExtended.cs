@@ -1,6 +1,7 @@
 using UnityEngine;
-using MoreMountains.Tools;
 using TMPro;
+using RingOfEldenSwords.Combat.Weapons;
+using RingOfEldenSwords.Character.Abilities;
 
 namespace MoreMountains.TopDownEngine
 {
@@ -33,7 +34,7 @@ namespace MoreMountains.TopDownEngine
 
         /// the weapon definition passed from the dead enemy's CharacterWeaponsOrbit.
         /// Null if the enemy had no WeaponDefinition assigned.
-        protected RingOfEldenSwords.Combat.Weapons.OrbitWeaponDefinition _weaponDefinition;
+        protected OrbitWeaponDefinition _weaponDefinition;
 
         /// how many weapons this pickup grants, taken from CharacterWeaponsOrbit.WeaponCount
         protected int _weaponCount;
@@ -46,11 +47,18 @@ namespace MoreMountains.TopDownEngine
         /// Stores weapon data and immediately updates the visible sprite and count label.
         /// </summary>
         public virtual void Initialize(
-            RingOfEldenSwords.Combat.Weapons.OrbitWeaponDefinition definition,
+            OrbitWeaponDefinition definition,
             int count)
         {
             _weaponDefinition = definition;
             _weaponCount      = count;
+
+            // Re-enable collider for pool reuse — PickableItem.PickItem() disables
+            // it when DisableColliderOnPick is true, and nothing re-enables it when
+            // the object is reactivated from the pool.
+            if (_collider2D != null) _collider2D.enabled = true;
+            if (_collider   != null) _collider.enabled   = true;
+
             ApplyVisuals();
         }
 
@@ -80,7 +88,7 @@ namespace MoreMountains.TopDownEngine
         {
             base.Pick(picker);
 
-            var orbit = picker.GetComponent<RingOfEldenSwords.Character.Abilities.CharacterWeaponsOrbit>();
+            var orbit = picker.GetComponent<CharacterWeaponsOrbit>();
             if (orbit == null) return;
 
             orbit.AddWeapons(_weaponCount, _weaponDefinition);

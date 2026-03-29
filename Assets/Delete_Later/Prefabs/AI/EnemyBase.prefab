@@ -1109,6 +1109,7 @@ MonoBehaviour:
     type: 3}
   WeaponDefinition: {fileID: 11400000, guid: edd4b555952f44673be81bc74ce81f93, type: 2}
   WeaponCount: 3
+  PoolSize: 20
   OrbitRadius: 1.5
   OrbitSpeed: 180
   SpawnAngleOffset: -45

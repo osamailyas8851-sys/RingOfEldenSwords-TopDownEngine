@@ -68,7 +68,18 @@ namespace RingOfEldenSwords.Character.Abilities
         [Tooltip("How many swords orbit the player at game start and after respawn.")]
         public int WeaponCount = 3;
 
-        // ── 2. Orbit Motion ───────────────────────────────────────────────────────
+        // ── 2. Pooling ────────────────────────────────────────────────────────────
+
+        [Header("Pooling")]
+
+        /// number of sword objects pre-created in the shared pool at scene load.
+        /// Shared across all CharacterWeaponsOrbit instances using the same WeaponPrefab —
+        /// set this high enough to cover the peak simultaneous sword count across the scene
+        /// (player swords + all enemy swords active at once).
+        [Tooltip("Pre-created swords in the shared pool. Must cover peak simultaneous usage across all characters.")]
+        public int PoolSize = 20;
+
+        // ── 3. Orbit Motion ───────────────────────────────────────────────────────
 
         [Header("Orbit Motion")]
 
@@ -177,10 +188,32 @@ namespace RingOfEldenSwords.Character.Abilities
             public OrbitWeaponCombat Behaviour;
         }
 
+        // ── Static Shared Pool ────────────────────────────────────────────────────
+        // One MMSimpleObjectPooler per WeaponPrefab, shared across ALL instances
+        // (player + every enemy). Mirrors the exact pattern used by Loot.SimplePoolers.
+
+        /// shared pool registry — one pooler entry per unique WeaponPrefab
+        public static List<MMSimpleObjectPooler> SwordPoolers = new List<MMSimpleObjectPooler>();
+
+        /// resets the static list on domain reload / Play Mode entry so stale
+        /// references from a previous session never leak into the new one
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        protected static void InitializeStatics()
+        {
+            SwordPoolers = new List<MMSimpleObjectPooler>();
+        }
+
+        /// instance reference to the shared pooler for this character's WeaponPrefab
+        protected MMSimpleObjectPooler _swordPooler;
+
+        /// cached transform of the pooler's _waitingPool child — the correct parent
+        /// for swords returned to the pool (matches where FillObjectPool places them)
+        protected Transform _waitingPoolTransform;
+
+        // ── Instance State ────────────────────────────────────────────────────────
+
         /// all currently active (visible) swords in the orbit ring
         protected List<WeaponEntry>  _activeWeapons         = new List<WeaponEntry>();
-        /// inactive swords stored for reuse — avoids Instantiate/Destroy GC spikes
-        protected Queue<GameObject>  _weaponPool            = new Queue<GameObject>();
         /// reused buffer for the Weapons property — avoids per-frame GC allocation
         protected List<GameObject>   _weaponsReadOnlyBuffer = new List<GameObject>();
         /// the invisible child Transform whose Z rotation changes every frame
@@ -211,6 +244,12 @@ namespace RingOfEldenSwords.Character.Abilities
                 return;
             }
 
+            _swordPooler = FindSwordPooler();
+            // Cache the waiting pool transform — this is where FillObjectPool()
+            // parents initial swords. We must reparent to the same place so the
+            // hierarchy stays consistent.
+            var objectPool = _swordPooler.GetComponentInChildren<MMObjectPool>(true);
+            _waitingPoolTransform = objectPool != null ? objectPool.transform : _swordPooler.transform;
             _pivot = GetOrCreatePivot();
             UpdateWeapons(WeaponCount);
         }
@@ -311,11 +350,10 @@ namespace RingOfEldenSwords.Character.Abilities
         /// </summary>
         protected virtual void OnDestroy()
         {
-            while (_weaponPool.Count > 0)
-            {
-                var pooled = _weaponPool.Dequeue();
-                if (pooled != null) Destroy(pooled);
-            }
+            // Return active swords to the shared pool before this GameObject is destroyed.
+            // Without this, swords parented to our pivot are destroyed with us,
+            // leaving the pooler's tracked list with null (destroyed) references.
+            ReturnAllWeaponsToPool();
         }
 
         // ─── Public API ───────────────────────────────────────────────────────────
@@ -399,7 +437,10 @@ namespace RingOfEldenSwords.Character.Abilities
                 if (entry.Go == null) continue;
                 UnsubscribeWeapon(entry.Behaviour);
                 entry.Go.SetActive(false);
-                _weaponPool.Enqueue(entry.Go);
+                // Reparent back to the pooler so swords survive if this character's
+                // pivot is destroyed — keeps the pooler's tracked list free of nulls.
+                if (_waitingPoolTransform != null)
+                    entry.Go.transform.SetParent(_waitingPoolTransform);
             }
             _activeWeapons.Clear();
             _isRotating = false;
@@ -444,13 +485,15 @@ namespace RingOfEldenSwords.Character.Abilities
                 return null;
             }
 
-            // Pull from pool; skip any null entries that may have been destroyed
-            // externally (scene unload edge case).
-            GameObject weapon = null;
-            while (_weaponPool.Count > 0 && weapon == null)
-                weapon = _weaponPool.Dequeue();
+            // Fetch an inactive sword from the shared pool.
+            // PoolCanExpand = true guarantees a non-null result — the pooler
+            // creates a new instance only if every existing sword is active.
+            GameObject weapon = _swordPooler.GetPooledGameObject();
             if (weapon == null)
-                weapon = Instantiate(WeaponPrefab);
+            {
+                Debug.LogError("[CharacterWeaponsOrbit] Shared sword pool returned null.", this);
+                return null;
+            }
 
             // Parent to pivot — worldPositionStays=false keeps the sword at the
             // player's origin rather than inheriting the pivot's world position.
@@ -460,6 +503,15 @@ namespace RingOfEldenSwords.Character.Abilities
 
             weapon.tag = ResolveOwnerTag();
 
+            EnsureKinematicRigidbody(weapon);
+            ApplyWeaponSortingOrder(weapon);
+
+            // Activate BEFORE applying definition — MMInstantiateDisabled skips Awake()
+            // on pool creation, so OrbitWeaponCombat's cached refs (SpriteRenderer, etc.)
+            // are null until the first SetActive(true) triggers Awake(). Applying the
+            // definition on an inactive sword silently fails.
+            weapon.SetActive(true);
+
             var wb = weapon.GetComponent<OrbitWeaponCombat>();
             if (wb != null)
             {
@@ -467,10 +519,6 @@ namespace RingOfEldenSwords.Character.Abilities
                 wb.OnDestroyed += HandleWeaponDestroyed;
             }
 
-            EnsureKinematicRigidbody(weapon);
-            ApplyWeaponSortingOrder(weapon);
-
-            weapon.SetActive(true);
             _activeWeapons.Add(new WeaponEntry { Go = weapon, Behaviour = wb });
             return weapon;
         }
@@ -568,6 +616,14 @@ namespace RingOfEldenSwords.Character.Abilities
                 break;
             }
 
+            // Reparent to the pooler BEFORE MMPoolableObject.Destroy() deactivates it.
+            // Without this, the inactive sword stays parented to this character's pivot.
+            // If this character is later destroyed (Destroy(enemyGO)), cascade destruction
+            // kills the sword too — leaving the pooler's tracked list with a null reference
+            // → MissingReferenceException on next GetPooledGameObject() call.
+            if (_waitingPoolTransform != null)
+                weapon.transform.SetParent(_waitingPoolTransform);
+
             OnWeaponDestroyed?.Invoke(weapon);
 
             // Last sword gone — remove immunity.
@@ -608,6 +664,36 @@ namespace RingOfEldenSwords.Character.Abilities
             go.transform.localPosition = Vector3.zero;
             go.transform.localRotation = Quaternion.identity;
             return go.transform;
+        }
+
+        /// <summary>
+        /// Finds or creates the shared MMSimpleObjectPooler for WeaponPrefab.
+        /// Mirrors Loot.FindSimplePooler() exactly:
+        ///   - scans SwordPoolers for an existing pooler with the same prefab
+        ///   - creates and registers a new one if none is found
+        /// All CharacterWeaponsOrbit instances using the same WeaponPrefab share
+        /// one pooler, so a dead enemy's swords are immediately reusable by the
+        /// next enemy that spawns — zero extra Instantiate calls.
+        /// </summary>
+        protected virtual MMSimpleObjectPooler FindSwordPooler()
+        {
+            foreach (var pooler in SwordPoolers)
+            {
+                if (pooler != null && pooler.GameObjectToPool == WeaponPrefab)
+                    return pooler;
+            }
+
+            var newGO     = new GameObject("[MMSimpleObjectPooler] " + WeaponPrefab.name);
+            var newPooler = newGO.AddComponent<MMSimpleObjectPooler>();
+            newPooler.GameObjectToPool = WeaponPrefab;
+            newPooler.PoolSize         = PoolSize;
+            newPooler.PoolCanExpand    = true;
+            newPooler.NestWaitingPool  = true;
+            newPooler.NestUnderThis    = true;
+            newPooler.FillObjectPool();
+            newPooler.Owner = SwordPoolers;
+            SwordPoolers.Add(newPooler);
+            return newPooler;
         }
 
         /// <summary>

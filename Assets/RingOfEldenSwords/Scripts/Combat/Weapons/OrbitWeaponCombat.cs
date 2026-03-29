@@ -172,7 +172,15 @@ namespace RingOfEldenSwords.Combat.Weapons
             if (_clashCooldown  != null) { StopCoroutine(_clashCooldown);  _clashCooldown  = null; }
             if (_entityCooldown != null) { StopCoroutine(_entityCooldown); _entityCooldown = null; }
             OnDestroyed?.Invoke(gameObject);
-            Destroy(gameObject);
+
+            // Use MMPoolableObject.Destroy() (SetActive(false)) instead of
+            // Object.Destroy() which permanently destroys the GameObject and
+            // leaves the shared pool's tracked list with a null reference.
+            var poolable = GetComponent<MoreMountains.Tools.MMPoolableObject>();
+            if (poolable != null)
+                poolable.Destroy();
+            else
+                Destroy(gameObject);
         }
     }
 }
