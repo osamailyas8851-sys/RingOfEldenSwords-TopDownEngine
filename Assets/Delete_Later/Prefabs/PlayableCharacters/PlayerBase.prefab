@@ -9874,7 +9874,7 @@ GameObject:
   - component: {fileID: 114171358364461030}
   - component: {fileID: 114499223069276626}
   - component: {fileID: 8182949735608798190}
-  - component: {fileID: 5405332692112173342}
+  - component: {fileID: 1705801512244151233}
   m_Layer: 10
   m_Name: PlayerBase
   m_TagString: Player
@@ -10508,7 +10508,7 @@ MonoBehaviour:
   WeaponRotationOffset: -45
   RequireCharacterComponent: 1
   RequirePlayerType: 1
---- !u!114 &5405332692112173342
+--- !u!114 &1705801512244151233
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10517,12 +10517,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1498750440386690}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: caf4909f916ac414ea6967b34e3e862f, type: 3}
+  m_Script: {fileID: 11500000, guid: b4eabe44dfac94f25b14c211a98ed906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxXP: 100
+  XPReward: 25
   CurrentXP: 0
-  CurrentLevel: 0
+  MaxXP: 100
+  CurrentLevel: 1
+  LevelScalingMultiplier: 1.2
+  LevelUpFeedbacks: {fileID: 0}
 --- !u!1 &1561075265052736
 GameObject:
   m_ObjectHideFlags: 0
