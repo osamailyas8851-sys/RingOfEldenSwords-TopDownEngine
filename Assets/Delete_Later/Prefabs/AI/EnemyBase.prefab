@@ -229,6 +229,7 @@ GameObject:
   - component: {fileID: -4963998176149537223}
   - component: {fileID: 114100000000000001}
   - component: {fileID: -1326594914606010313}
+  - component: {fileID: 6447486674111949571}
   m_Layer: 13
   m_Name: EnemyBase
   m_TagString: Enemy
@@ -1142,6 +1143,19 @@ MonoBehaviour:
   WeaponRotationOffset: -45
   RequireCharacterComponent: 1
   RequirePlayerType: 1
+--- !u!114 &6447486674111949571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1844942877436214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0641853fcdf540279ac0ca29242c64b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _xpReward: 25
 --- !u!1 &1951770156808372
 GameObject:
   m_ObjectHideFlags: 0

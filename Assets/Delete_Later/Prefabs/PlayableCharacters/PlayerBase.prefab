@@ -9874,6 +9874,7 @@ GameObject:
   - component: {fileID: 114171358364461030}
   - component: {fileID: 114499223069276626}
   - component: {fileID: 8182949735608798190}
+  - component: {fileID: 5405332692112173342}
   m_Layer: 10
   m_Name: PlayerBase
   m_TagString: Player
@@ -10507,6 +10508,21 @@ MonoBehaviour:
   WeaponRotationOffset: -45
   RequireCharacterComponent: 1
   RequirePlayerType: 1
+--- !u!114 &5405332692112173342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498750440386690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caf4909f916ac414ea6967b34e3e862f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxXP: 100
+  CurrentXP: 0
+  CurrentLevel: 0
 --- !u!1 &1561075265052736
 GameObject:
   m_ObjectHideFlags: 0
