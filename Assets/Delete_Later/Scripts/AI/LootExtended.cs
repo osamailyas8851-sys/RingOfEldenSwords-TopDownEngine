@@ -107,9 +107,13 @@ namespace MoreMountains.TopDownEngine
             if (pooled == null || pooled.Length == 0)
                 yield break;
 
-            pooled[0].gameObject.SetActive(true);
+            var go = pooled[0].gameObject;
+            var originalPos = go.transform.position;
+            go.transform.position = new Vector3(-9999f, -9999f, 0f);
+            go.SetActive(true);
             yield return null;
-            pooled[0].gameObject.SetActive(false);
+            go.SetActive(false);
+            go.transform.position = originalPos;
         }
     }
 }

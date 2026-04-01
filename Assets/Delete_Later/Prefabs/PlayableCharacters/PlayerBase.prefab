@@ -10472,8 +10472,9 @@ MonoBehaviour:
   BlockingWeaponStates: 
   WeaponPrefab: {fileID: 6621402824395965232, guid: c1601ae8b717b4846bb4a98fa9b61143,
     type: 3}
-  WeaponDefinition: {fileID: 11400000, guid: edd4b555952f44673be81bc74ce81f93, type: 2}
+  WeaponDefinition: {fileID: 11400000, guid: 18d7626dd474f4567b55c9f0ba51e76b, type: 2}
   WeaponCount: 10
+  PoolSize: 20
   OrbitRadius: 1.5
   OrbitSpeed: 180
   SpawnAngleOffset: -45
