@@ -219,17 +219,17 @@ GameObject:
   - component: {fileID: 114580261363407806}
   - component: {fileID: 114376427245620368}
   - component: {fileID: 114227402923553696}
+  - component: {fileID: 8304284689193200348}
   - component: {fileID: 114690482615011962}
   - component: {fileID: 114119721583310078}
   - component: {fileID: 114916003664736000}
   - component: {fileID: 114975401774144254}
-  - component: {fileID: 114276883646746832}
+  - component: {fileID: 7054471891959102472}
   - component: {fileID: 114922132597437960}
   - component: {fileID: 114365482740119984}
   - component: {fileID: -4963998176149537223}
   - component: {fileID: 114100000000000001}
   - component: {fileID: -1326594914606010313}
-  - component: {fileID: 8304284689193200348}
   m_Layer: 13
   m_Name: EnemyBase
   m_TagString: Enemy
@@ -463,7 +463,7 @@ MonoBehaviour:
   InputAuthorized: 1
   AnalogInput: 0
   ScriptDrivenInput: 0
-  WalkSpeed: 5
+  WalkSpeed: 3
   ShouldSetMovement: 1
   IdleThreshold: 0.05
   Acceleration: 10
@@ -614,6 +614,24 @@ MonoBehaviour:
   TargetDamageResistanceProcessor: {fileID: 0}
   TargetAnimator: {fileID: 0}
   DisableAnimatorLogs: 1
+--- !u!114 &8304284689193200348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1844942877436214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4eabe44dfac94f25b14c211a98ed906, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  XPReward: 25
+  CurrentXP: 0
+  MaxXP: 100
+  CurrentLevel: 1
+  LevelScalingMultiplier: 1.2
+  LevelUpFeedbacks: {fileID: 0}
 --- !u!114 &114690482615011962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -631,7 +649,7 @@ MonoBehaviour:
   - StateName: Patrolling
     Actions:
       array:
-      - {fileID: 114276883646746832}
+      - {fileID: 7054471891959102472}
     Transitions:
       array:
       - Decision: {fileID: 114119721583310078}
@@ -718,7 +736,7 @@ MonoBehaviour:
   Label: 
   UseMinimumXDistance: 1
   MinimumXDistance: 2
---- !u!114 &114276883646746832
+--- !u!114 &7054471891959102472
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -727,17 +745,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1844942877436214}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a673056e18ebe048b95497cc830d294, type: 3}
+  m_Script: {fileID: 11500000, guid: ca15e0f687c394e588a946da92b7e501, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   InitializationMode: 0
   Label: 
-  ChangeDirectionOnObstacle: 1
-  ObstaclesLayerMask:
+  MaximumDurationInADirection: 3
+  ObstacleLayerMask:
     serializedVersion: 2
     m_Bits: 256
-  ObstaclesDetectionRaycastLength: 3
-  ObstaclesCheckFrequency: 0.1
+  ObstaclesDetectionDistance: 2
+  ObstaclesCheckFrequency: 0.5
+  MinimumRandomDirection: {x: -1, y: -1}
+  MaximumRandomDirection: {x: 1, y: 1}
 --- !u!114 &114922132597437960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1143,24 +1163,6 @@ MonoBehaviour:
   WeaponRotationOffset: -45
   RequireCharacterComponent: 1
   RequirePlayerType: 1
---- !u!114 &8304284689193200348
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1844942877436214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4eabe44dfac94f25b14c211a98ed906, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  XPReward: 25
-  CurrentXP: 0
-  MaxXP: 100
-  CurrentLevel: 1
-  LevelScalingMultiplier: 1.2
-  LevelUpFeedbacks: {fileID: 0}
 --- !u!1 &1951770156808372
 GameObject:
   m_ObjectHideFlags: 0
