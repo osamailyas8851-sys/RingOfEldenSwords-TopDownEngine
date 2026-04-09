@@ -9875,6 +9875,7 @@ GameObject:
   - component: {fileID: 114499223069276626}
   - component: {fileID: 8182949735608798190}
   - component: {fileID: 1705801512244151233}
+  - component: {fileID: 4411245551384400301}
   m_Layer: 10
   m_Name: PlayerBase
   m_TagString: Player
@@ -10473,8 +10474,8 @@ MonoBehaviour:
   BlockingWeaponStates: 
   WeaponPrefab: {fileID: 6621402824395965232, guid: c1601ae8b717b4846bb4a98fa9b61143,
     type: 3}
-  WeaponDefinition: {fileID: 11400000, guid: 18d7626dd474f4567b55c9f0ba51e76b, type: 2}
-  WeaponCount: 10
+  WeaponDefinition: {fileID: 11400000, guid: 82fa588e1afc9481d8e7d76381f0e260, type: 2}
+  WeaponCount: 12
   PoolSize: 20
   OrbitRadius: 1.5
   OrbitSpeed: 180
@@ -10526,6 +10527,30 @@ MonoBehaviour:
   CurrentLevel: 1
   LevelScalingMultiplier: 1.2
   LevelUpFeedbacks: {fileID: 0}
+--- !u!114 &4411245551384400301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498750440386690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cfed9b1b480f43a0aa11296426a5b52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AvailablePerks:
+  - {fileID: 11400000, guid: 301df2b73f861452cb7ed116eac308e8, type: 2}
+  - {fileID: 11400000, guid: ad62b681716ee4d2fb7ecae33f22ba65, type: 2}
+  - {fileID: 11400000, guid: f049fd99cc9d74fb0b1dd4c6a9086652, type: 2}
+  SwordTiers:
+  - {fileID: 11400000, guid: d1a7d8be4cbd145f9901e1afeae790a6, type: 2}
+  - {fileID: 11400000, guid: 7c727587815ba45ffbbedc6d94151078, type: 2}
+  - {fileID: 11400000, guid: 6a98d5e084ac948eeae0868eaf552546, type: 2}
+  - {fileID: 11400000, guid: 14c09f8d5e4694f6baacf757b82efa2b, type: 2}
+  - {fileID: 11400000, guid: 8a297ca21d54f44469cbc1686c2264ce, type: 2}
+  _perkUI: {fileID: 0}
+  AcquiredPerks: []
 --- !u!1 &1561075265052736
 GameObject:
   m_ObjectHideFlags: 0
