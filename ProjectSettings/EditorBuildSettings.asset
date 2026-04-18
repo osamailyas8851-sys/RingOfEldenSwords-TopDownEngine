@@ -137,4 +137,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/TopDownEngine/ThirdParty/MoreMountains/MMTools/Demos/MMSceneLoading/MMSceneLoadingDemoSceneB.unity
     guid: 352d34cac2435634fb99618d19a3929c
+  - enabled: 1
+    path: Assets/Delete_Later/Scenes/LevelSelect.unity
+    guid: ad789f2cbf6ab49fd8bd9d068b91be76
+  - enabled: 1
+    path: Assets/Delete_Later/Scenes/ProceduralLevel.unity
+    guid: 7bcb13dae7404478c879db18df2d0a24
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

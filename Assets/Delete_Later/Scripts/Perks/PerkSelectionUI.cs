@@ -10,7 +10,8 @@ namespace MoreMountains.TopDownEngine
     /// and MMFadeEvent for the scene-wide fader backdrop.
     /// Works in unscaled time so it animates while the game is paused.
     /// </summary>
-    public class PerkSelectionUI : MonoBehaviour
+    [AddComponentMenu("TopDown Engine/GUI/Perk Selection UI")]
+    public class PerkSelectionUI : TopDownMonoBehaviour
     {
         [Header("Card Slots")]
         [SerializeField] protected PerkCardUI[] _cards;

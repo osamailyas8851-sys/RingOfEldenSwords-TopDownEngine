@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using MoreMountains.Tools;
 using RingOfEldenSwords.Character.Abilities;
@@ -9,13 +10,19 @@ namespace MoreMountains.TopDownEngine
     [AddComponentMenu("TopDown Engine/Character/Perks/Perk Manager")]
     public class PerkManager : TopDownMonoBehaviour, MMEventListener<XPChangeEvent>
     {
-        [Header("Perk Pool")]
-        [Tooltip("All perks available in the random selection pool.")]
+        [Header("Auto-Load Paths (Resources/)")]
+        [Tooltip("Resources sub-folder to auto-load PerkDefinition assets from. Leave empty to use the manual array below.")]
+        [SerializeField] protected string PerksResourcePath = "Perks";
+
+        [Tooltip("Resources sub-folder to auto-load OrbitWeaponDefinition assets from (sorted by name). Leave empty to use the manual array below.")]
+        [SerializeField] protected string SwordsResourcePath = "Weapons/Swords";
+
+        [Header("Manual Overrides (used only if Resource paths are empty)")]
+        [Tooltip("Manually assigned perks. Ignored when PerksResourcePath is set.")]
         [SerializeField] protected PerkDefinition[] AvailablePerks;
 
-        [Header("Sword Tiers (ordered Level 1 -> 5)")]
-        [Tooltip("Drag Sword_Level_1 through Sword_Level_5 in order.")]
-        [SerializeField] protected OrbitWeaponDefinition[] SwordTiers;
+        // Always auto-loaded from Resources — not exposed in Inspector
+        protected OrbitWeaponDefinition[] SwordTiers;
 
         [Header("UI")]
         [SerializeField] protected PerkSelectionUI _perkUI;
@@ -34,6 +41,15 @@ namespace MoreMountains.TopDownEngine
             _orbit  = GetComponent<CharacterWeaponsOrbit>();
             _health = GetComponent<Health>();
 
+            // Auto-load perks from Resources if path is set
+            LoadPerksFromResources();
+
+            // Auto-load sword tiers from Resources if path is set
+            LoadSwordTiersFromResources();
+
+            // Cap sword tiers based on the selected level's MaxSwordTier
+            ApplyLevelSwordCap();
+
             // Find PerkSelectionUI in scene if not assigned
             if (_perkUI == null)
             {
@@ -45,6 +61,89 @@ namespace MoreMountains.TopDownEngine
             if (_perkUI != null)
                 _perkUI.Hide();
         }
+
+        // ── Auto-Load from Resources ─────────────────────────────────────
+
+        /// <summary>
+        /// Loads all PerkDefinition assets from Resources/[PerksResourcePath].
+        /// Any new .asset dropped into that folder is picked up automatically.
+        /// </summary>
+        protected virtual void LoadPerksFromResources()
+        {
+            if (string.IsNullOrEmpty(PerksResourcePath)) return;
+
+            PerkDefinition[] loaded = Resources.LoadAll<PerkDefinition>(PerksResourcePath);
+            if (loaded.Length > 0)
+            {
+                AvailablePerks = loaded;
+                Debug.Log($"[PerkManager] Auto-loaded {loaded.Length} perks from Resources/{PerksResourcePath}");
+            }
+            else
+            {
+                Debug.LogWarning($"[PerkManager] No PerkDefinition assets found in Resources/{PerksResourcePath}");
+            }
+        }
+
+        /// <summary>
+        /// Loads all OrbitWeaponDefinition assets from Resources/[SwordsResourcePath],
+        /// sorted by name so Sword_Level_1 → Sword_Level_48 are in correct tier order.
+        /// </summary>
+        protected virtual void LoadSwordTiersFromResources()
+        {
+            if (string.IsNullOrEmpty(SwordsResourcePath)) return;
+
+            OrbitWeaponDefinition[] loaded = Resources.LoadAll<OrbitWeaponDefinition>(SwordsResourcePath);
+            if (loaded.Length > 0)
+            {
+                // Sort by name using natural numeric ordering (Level_1, Level_2, ..., Level_10)
+                SwordTiers = loaded.OrderBy(s => ExtractSwordLevel(s.name)).ToArray();
+                Debug.Log($"[PerkManager] Auto-loaded {SwordTiers.Length} sword tiers from Resources/{SwordsResourcePath}");
+            }
+            else
+            {
+                Debug.LogWarning($"[PerkManager] No OrbitWeaponDefinition assets found in Resources/{SwordsResourcePath}");
+            }
+        }
+
+        /// <summary>
+        /// Caps the SwordTiers array based on the selected level's MaxSwordTier.
+        /// If no level is selected (e.g., launching scene directly from editor), all tiers remain available.
+        /// </summary>
+        protected virtual void ApplyLevelSwordCap()
+        {
+            if (SwordTiers == null || SwordTiers.Length == 0) return;
+            if (!LevelSelectConfig.HasSelection) return;
+
+            int maxTier = LevelSelectConfig.SelectedLevel.MaxSwordTier;
+            if (maxTier <= 0) return;
+
+            if (maxTier < SwordTiers.Length)
+            {
+                OrbitWeaponDefinition[] capped = new OrbitWeaponDefinition[maxTier];
+                System.Array.Copy(SwordTiers, capped, maxTier);
+                SwordTiers = capped;
+                Debug.Log($"[PerkManager] Sword tiers capped to {maxTier} for level '{LevelSelectConfig.SelectedLevel.LevelName}'");
+            }
+        }
+
+        /// <summary>
+        /// Extracts the numeric level from a name like "Sword_Level_12".
+        /// Returns the number for sorting, or int.MaxValue if not found.
+        /// </summary>
+        protected virtual int ExtractSwordLevel(string assetName)
+        {
+            // Find the last underscore and parse the number after it
+            int lastUnderscore = assetName.LastIndexOf('_');
+            if (lastUnderscore >= 0 && lastUnderscore < assetName.Length - 1)
+            {
+                string numberPart = assetName.Substring(lastUnderscore + 1);
+                if (int.TryParse(numberPart, out int level))
+                    return level;
+            }
+            return int.MaxValue;
+        }
+
+        // ── Event Listeners ──────────────────────────────────────────────
 
         protected virtual void OnEnable()
         {
@@ -64,6 +163,8 @@ namespace MoreMountains.TopDownEngine
             if (xpEvent.JustLeveledUp)
                 ShowPerkSelection();
         }
+
+        // ── Perk Selection Flow ──────────────────────────────────────────
 
         protected virtual void ShowPerkSelection()
         {
@@ -106,7 +207,6 @@ namespace MoreMountains.TopDownEngine
             }
             else
             {
-                // Fallback if GameManager is missing
                 Time.timeScale = 0f;
             }
         }
@@ -119,7 +219,6 @@ namespace MoreMountains.TopDownEngine
             }
             else if (Time.timeScale == 0f)
             {
-                // Fallback safety net
                 Time.timeScale = 1f;
             }
         }
@@ -157,7 +256,7 @@ namespace MoreMountains.TopDownEngine
             int currentIndex = GetCurrentSwordTierIndex();
             int nextIndex    = Mathf.Min(currentIndex + 1, SwordTiers.Length - 1);
 
-            if (nextIndex == currentIndex) return; // already max
+            if (nextIndex == currentIndex) return;
 
             _orbit.WeaponDefinition = SwordTiers[nextIndex];
             _orbit.UpdateWeapons(_orbit.ActiveWeaponCount);
@@ -189,22 +288,19 @@ namespace MoreMountains.TopDownEngine
             {
                 if (perk == null) continue;
 
-                // Filter out SwordLevelUp if already at max tier
                 if (perk.PerkType == PerkType.SwordLevelUp && IsSwordMaxLevel())
                     continue;
 
                 _reusablePool.Add(perk);
             }
 
-            // Fisher-Yates partial shuffle and pick
             int pickCount = Mathf.Min(count, _reusablePool.Count);
             PerkDefinition[] result = new PerkDefinition[pickCount];
 
             for (int i = 0; i < pickCount; i++)
             {
                 int randomIndex = Random.Range(i, _reusablePool.Count);
-                // Swap
-                PerkDefinition temp    = _reusablePool[i];
+                PerkDefinition temp        = _reusablePool[i];
                 _reusablePool[i]           = _reusablePool[randomIndex];
                 _reusablePool[randomIndex] = temp;
 

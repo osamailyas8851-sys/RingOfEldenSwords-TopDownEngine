@@ -10539,16 +10539,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cfed9b1b480f43a0aa11296426a5b52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PerksResourcePath: Perks
+  SwordsResourcePath: Weapons/Swords
   AvailablePerks:
   - {fileID: 11400000, guid: 301df2b73f861452cb7ed116eac308e8, type: 2}
   - {fileID: 11400000, guid: ad62b681716ee4d2fb7ecae33f22ba65, type: 2}
   - {fileID: 11400000, guid: f049fd99cc9d74fb0b1dd4c6a9086652, type: 2}
-  SwordTiers:
-  - {fileID: 11400000, guid: d1a7d8be4cbd145f9901e1afeae790a6, type: 2}
-  - {fileID: 11400000, guid: 7c727587815ba45ffbbedc6d94151078, type: 2}
-  - {fileID: 11400000, guid: 6a98d5e084ac948eeae0868eaf552546, type: 2}
-  - {fileID: 11400000, guid: 14c09f8d5e4694f6baacf757b82efa2b, type: 2}
-  - {fileID: 11400000, guid: 8a297ca21d54f44469cbc1686c2264ce, type: 2}
   _perkUI: {fileID: 0}
   AcquiredPerks: []
 --- !u!1 &1561075265052736

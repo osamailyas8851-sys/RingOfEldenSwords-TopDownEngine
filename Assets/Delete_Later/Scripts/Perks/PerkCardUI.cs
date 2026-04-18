@@ -4,7 +4,13 @@ using TMPro;
 
 namespace MoreMountains.TopDownEngine
 {
-    public class PerkCardUI : MonoBehaviour
+    /// <summary>
+    /// Individual perk card in the selection overlay.
+    /// Displays a PerkDefinition's icon and name, and notifies
+    /// PerkManager when the player clicks this card.
+    /// </summary>
+    [AddComponentMenu("TopDown Engine/GUI/Perk Card UI")]
+    public class PerkCardUI : TopDownMonoBehaviour
     {
         [SerializeField] protected Image _iconImage;
         [SerializeField] protected TMP_Text _nameText;
