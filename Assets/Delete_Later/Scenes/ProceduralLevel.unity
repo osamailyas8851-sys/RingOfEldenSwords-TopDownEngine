@@ -41798,10 +41798,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f8a3c2b4d5e6f7a8b9c0d1e2f3a4b5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   TotalWaves: 16
   WaveInterval: 60
+  SpawnFirstWaveImmediately: 1
+  EnemyPrefab: {fileID: 1178206522702842, guid: 07d6ddbf00e5f40a1b21fd20bd260f60, type: 3}
+  BaseEnemiesPerWave: 5
+  WaveCountScaling: 1
+  AreaCenter: {x: 0, y: 0}
+  AreaExtents: {x: 8, y: 6}
+  MinDistanceFromCenter: 3
+  ForceSpawnNextWaveBtn: 0
 --- !u!114 &9000000004
 MonoBehaviour:
   m_ObjectHideFlags: 0
