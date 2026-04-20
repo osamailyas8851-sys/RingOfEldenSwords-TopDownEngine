@@ -41803,7 +41803,7 @@ MonoBehaviour:
   TotalWaves: 16
   WaveInterval: 60
   SpawnFirstWaveImmediately: 1
-  EnemyPrefab: {fileID: 1178206522702842, guid: 07d6ddbf00e5f40a1b21fd20bd260f60, type: 3}
+  EnemyPrefab: {fileID: 1561694053617324, guid: b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7, type: 3}
   BaseEnemiesPerWave: 5
   WaveCountScaling: 1
   AreaCenter: {x: 0, y: 0}

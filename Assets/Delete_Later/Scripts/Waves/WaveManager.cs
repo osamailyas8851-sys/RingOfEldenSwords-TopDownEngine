@@ -142,7 +142,8 @@ namespace MoreMountains.TopDownEngine
             for (int i = 0; i < positions.Length; i++)
             {
                 GameObject enemy = Instantiate(EnemyPrefab, positions[i], Quaternion.identity);
-                StartCoroutine(ReviveNextFrame(enemy, positions[i]));
+                Health health = enemy.GetComponent<Health>();
+                if (health != null) health.Revive();
             }
 
             Debug.Log($"[WaveManager] Wave {waveIndex}/{TotalWaves} spawned ({count} enemies).");
@@ -183,19 +184,6 @@ namespace MoreMountains.TopDownEngine
         public virtual void ForceSpawnNextWave()
         {
             _forceNextWave = true;
-        }
-
-        protected virtual IEnumerator ReviveNextFrame(GameObject enemy, Vector2 spawnPosition)
-        {
-            yield return null; // wait one frame for Awake/Start/_initialized to complete
-            if (enemy == null) yield break;
-            Health health = enemy.GetComponent<Health>();
-            if (health != null)
-            {
-                health.RespawnAtInitialLocation = false;
-                health.Revive();
-                enemy.transform.position = spawnPosition;
-            }
         }
 
         // ── Gizmos ─────────────────────────────────────────────────────────
